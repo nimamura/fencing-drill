@@ -272,6 +272,16 @@ fencing-drill/
 - [x] Session recovery on disconnect (pause/resume, status API)
 - [x] PWA support (manifest, service worker, offline caching)
 
+### Phase 6: Multi-language Support ✅ DONE
+- [x] Translation data (`static/js/i18n.js`) for Japanese, English, French
+- [x] Language selector in header with localStorage persistence
+- [x] data-i18n attributes on all translatable UI elements
+- [x] Localized command display during training sessions
+- [x] Localized Command Reference section
+- [x] Localized unit labels (times, seconds, minutes, sets)
+- [x] Auto-apply translations after htmx content swaps
+- [x] Tests (14 tests in `tests/test_i18n.py`)
+
 ---
 
 ## UI Design
@@ -293,10 +303,11 @@ fencing-drill/
 
 ## Open Questions
 
-1. **Audio file sourcing** — Record ourselves? Use TTS service?
-2. **Offline support** — PWA for gym use without internet?
+1. **Audio file sourcing** — Record ourselves? Use TTS service? (Currently using TTS placeholder)
+2. ~~**Offline support** — PWA for gym use without internet?~~ ✅ Implemented in Phase 5
 3. **Multi-user** — Future support for class/group training?
 4. **Custom patterns** — Allow users to create their own combination patterns?
+5. ~~**Multi-language** — 日本語/English/Français切り替え?~~ ✅ Implemented in Phase 6
 
 ---
 
