@@ -78,6 +78,25 @@
             transform: translateY(0);
         }
 
+        /* Mobile touch-friendly buttons */
+        @media (max-width: 640px) {
+            .touch-target {
+                min-height: 44px;
+                min-width: 44px;
+            }
+            .mobile-menu-hidden {
+                display: none;
+            }
+            .mobile-menu-visible {
+                display: block;
+            }
+        }
+
+        /* Command display responsive sizing */
+        .command-text-responsive {
+            font-size: clamp(3rem, 15vw, 8rem);
+        }
+
         .slider-track {
             -webkit-appearance: none;
             appearance: none;
@@ -132,102 +151,103 @@
 
     <!-- ヘッダー -->
     <header class="border-b border-fencing-surface-light/50">
-        <div class="max-w-6xl mx-auto px-6 py-4">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
             <div class="flex items-center justify-between">
-                <div class="flex items-center gap-4">
-                    <div class="text-4xl">🤺</div>
+                <div class="flex items-center gap-2 sm:gap-4">
+                    <div class="text-2xl sm:text-4xl">🤺</div>
                     <div>
-                        <h1 class="font-display text-3xl tracking-wider text-fencing-silver">FENCING DRILL</h1>
-                        <p class="text-xs text-fencing-steel/60 tracking-widest uppercase">Training Assistant</p>
+                        <h1 class="font-display text-xl sm:text-3xl tracking-wider text-fencing-silver">FENCING DRILL</h1>
+                        <p class="text-[10px] sm:text-xs text-fencing-steel/60 tracking-widest uppercase hidden sm:block">Training Assistant</p>
                     </div>
                 </div>
-                <div class="flex items-center gap-2 text-sm text-fencing-steel/50" id="connection-status">
+                <div class="flex items-center gap-2 text-xs sm:text-sm text-fencing-steel/50" id="connection-status">
                     <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-                    準備完了
+                    <span class="hidden sm:inline">準備完了</span>
                 </div>
             </div>
         </div>
     </header>
 
-    <main class="max-w-6xl mx-auto px-6 py-8">
-        <div class="grid lg:grid-cols-3 gap-8">
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-8">
+        <div class="grid lg:grid-cols-3 gap-4 sm:gap-8">
 
             <!-- 左カラム: モード選択 & 設定 -->
-            <div class="lg:col-span-1 space-y-6">
+            <div class="lg:col-span-1 space-y-4 sm:space-y-6">
 
                 <!-- モード選択 -->
                 <section>
-                    <h2 class="text-xs font-medium text-fencing-steel/50 uppercase tracking-widest mb-4">Training Mode</h2>
-                    <div class="space-y-3" id="mode-selector">
+                    <h2 class="text-xs font-medium text-fencing-steel/50 uppercase tracking-widest mb-3 sm:mb-4">Training Mode</h2>
+                    <!-- Horizontal scroll on mobile, vertical list on desktop -->
+                    <div class="flex sm:flex-col gap-2 sm:gap-3 overflow-x-auto sm:overflow-visible pb-2 sm:pb-0 -mx-4 px-4 sm:mx-0 sm:px-0" id="mode-selector">
 
-                        <button class="mode-card active w-full p-4 rounded-lg border border-fencing-gold/30 text-left group"
+                        <button class="mode-card active flex-shrink-0 w-[140px] sm:w-full p-3 sm:p-4 rounded-lg border border-fencing-gold/30 text-left group touch-target"
                                 hx-get="/settings/basic"
                                 hx-target="#settings-panel"
                                 hx-swap="innerHTML"
                                 onclick="selectMode(this, 'basic')">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-lg bg-fencing-gold/10 flex items-center justify-center text-fencing-gold">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="flex flex-col sm:flex-row items-center sm:items-center gap-2 sm:gap-3">
+                                <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-fencing-gold/10 flex items-center justify-center text-fencing-gold">
+                                    <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                                     </svg>
                                 </div>
-                                <div>
-                                    <div class="font-medium text-fencing-silver group-hover:text-fencing-gold transition-colors">基礎反復</div>
-                                    <div class="text-xs text-fencing-steel/50">単一動作の反復練習</div>
+                                <div class="text-center sm:text-left">
+                                    <div class="font-medium text-sm sm:text-base text-fencing-silver group-hover:text-fencing-gold transition-colors">基礎反復</div>
+                                    <div class="text-[10px] sm:text-xs text-fencing-steel/50 hidden sm:block">単一動作の反復練習</div>
                                 </div>
                             </div>
                         </button>
 
-                        <button class="mode-card w-full p-4 rounded-lg border border-fencing-surface-light text-left group"
+                        <button class="mode-card flex-shrink-0 w-[140px] sm:w-full p-3 sm:p-4 rounded-lg border border-fencing-surface-light text-left group touch-target"
                                 hx-get="/settings/combination"
                                 hx-target="#settings-panel"
                                 hx-swap="innerHTML"
                                 onclick="selectMode(this, 'combination')">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-lg bg-fencing-accent/10 flex items-center justify-center text-fencing-accent">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="flex flex-col sm:flex-row items-center sm:items-center gap-2 sm:gap-3">
+                                <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-fencing-accent/10 flex items-center justify-center text-fencing-accent">
+                                    <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
                                     </svg>
                                 </div>
-                                <div>
-                                    <div class="font-medium text-fencing-silver group-hover:text-fencing-gold transition-colors">コンビネーション</div>
-                                    <div class="text-xs text-fencing-steel/50">パターン練習</div>
+                                <div class="text-center sm:text-left">
+                                    <div class="font-medium text-sm sm:text-base text-fencing-silver group-hover:text-fencing-gold transition-colors">コンビネーション</div>
+                                    <div class="text-[10px] sm:text-xs text-fencing-steel/50 hidden sm:block">パターン練習</div>
                                 </div>
                             </div>
                         </button>
 
-                        <button class="mode-card w-full p-4 rounded-lg border border-fencing-surface-light text-left group"
+                        <button class="mode-card flex-shrink-0 w-[140px] sm:w-full p-3 sm:p-4 rounded-lg border border-fencing-surface-light text-left group touch-target"
                                 hx-get="/settings/random"
                                 hx-target="#settings-panel"
                                 hx-swap="innerHTML"
                                 onclick="selectMode(this, 'random')">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-lg bg-fencing-accent/10 flex items-center justify-center text-fencing-accent">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="flex flex-col sm:flex-row items-center sm:items-center gap-2 sm:gap-3">
+                                <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-fencing-accent/10 flex items-center justify-center text-fencing-accent">
+                                    <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                                     </svg>
                                 </div>
-                                <div>
-                                    <div class="font-medium text-fencing-silver group-hover:text-fencing-gold transition-colors">ランダム</div>
-                                    <div class="text-xs text-fencing-steel/50">反応速度トレーニング</div>
+                                <div class="text-center sm:text-left">
+                                    <div class="font-medium text-sm sm:text-base text-fencing-silver group-hover:text-fencing-gold transition-colors">ランダム</div>
+                                    <div class="text-[10px] sm:text-xs text-fencing-steel/50 hidden sm:block">反応速度トレーニング</div>
                                 </div>
                             </div>
                         </button>
 
-                        <button class="mode-card w-full p-4 rounded-lg border border-fencing-surface-light text-left group"
+                        <button class="mode-card flex-shrink-0 w-[140px] sm:w-full p-3 sm:p-4 rounded-lg border border-fencing-surface-light text-left group touch-target"
                                 hx-get="/settings/interval"
                                 hx-target="#settings-panel"
                                 hx-swap="innerHTML"
                                 onclick="selectMode(this, 'interval')">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-lg bg-fencing-accent/10 flex items-center justify-center text-fencing-accent">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="flex flex-col sm:flex-row items-center sm:items-center gap-2 sm:gap-3">
+                                <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-fencing-accent/10 flex items-center justify-center text-fencing-accent">
+                                    <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"></path>
                                     </svg>
                                 </div>
-                                <div>
-                                    <div class="font-medium text-fencing-silver group-hover:text-fencing-gold transition-colors">インターバル</div>
-                                    <div class="text-xs text-fencing-steel/50">高強度トレーニング</div>
+                                <div class="text-center sm:text-left">
+                                    <div class="font-medium text-sm sm:text-base text-fencing-silver group-hover:text-fencing-gold transition-colors">インターバル</div>
+                                    <div class="text-[10px] sm:text-xs text-fencing-steel/50 hidden sm:block">高強度トレーニング</div>
                                 </div>
                             </div>
                         </button>
@@ -236,8 +256,8 @@
                 </section>
 
                 <!-- 設定パネル -->
-                <section class="bg-fencing-surface/50 rounded-xl p-5 border border-fencing-surface-light/50">
-                    <h2 class="text-xs font-medium text-fencing-steel/50 uppercase tracking-widest mb-4">Settings</h2>
+                <section class="bg-fencing-surface/50 rounded-xl p-4 sm:p-5 border border-fencing-surface-light/50">
+                    <h2 class="text-xs font-medium text-fencing-steel/50 uppercase tracking-widest mb-3 sm:mb-4">Settings</h2>
                     <form id="settings-form" hx-post="/session/start" hx-target="#session-container" hx-swap="innerHTML">
                         <input type="hidden" name="mode" id="selected-mode" value="basic">
                         <div id="settings-panel" class="space-y-5">
@@ -262,19 +282,19 @@
                         </div>
 
                         <!-- ステータスバー -->
-                        <div class="relative border-b border-fencing-surface-light/30 px-6 py-3 flex justify-between items-center">
-                            <div class="flex items-center gap-3">
-                                <span class="text-xs text-fencing-steel/50 uppercase tracking-wider">Current Mode:</span>
-                                <span class="text-sm text-fencing-silver" id="current-mode-label">基礎反復</span>
+                        <div class="relative border-b border-fencing-surface-light/30 px-4 sm:px-6 py-2 sm:py-3 flex justify-between items-center">
+                            <div class="flex items-center gap-2 sm:gap-3">
+                                <span class="text-[10px] sm:text-xs text-fencing-steel/50 uppercase tracking-wider hidden sm:inline">Current Mode:</span>
+                                <span class="text-xs sm:text-sm text-fencing-silver" id="current-mode-label">基礎反復</span>
                             </div>
-                            <div class="flex items-center gap-4 text-sm">
-                                <div class="flex items-center gap-2">
-                                    <svg class="w-4 h-4 text-fencing-steel/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="flex items-center gap-2 sm:gap-4 text-xs sm:text-sm">
+                                <div class="flex items-center gap-1 sm:gap-2">
+                                    <svg class="w-3 h-3 sm:w-4 sm:h-4 text-fencing-steel/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                     </svg>
                                     <span class="text-fencing-steel/70" id="remaining-time">--:--</span>
                                 </div>
-                                <div class="flex items-center gap-2">
+                                <div class="flex items-center gap-1 sm:gap-2">
                                     <span class="text-fencing-steel/50">#</span>
                                     <span class="text-fencing-steel/70" id="current-rep">0 / --</span>
                                 </div>
@@ -282,30 +302,30 @@
                         </div>
 
                         <!-- メインコマンド表示 -->
-                        <div class="relative px-6 py-16 min-h-[320px] flex flex-col items-center justify-center" id="command-area">
+                        <div class="relative px-4 sm:px-6 py-8 sm:py-16 min-h-[200px] sm:min-h-[320px] flex flex-col items-center justify-center" id="command-area">
 
                             <!-- 待機状態 -->
                             <div id="idle-state" class="text-center">
-                                <div class="w-24 h-24 mx-auto mb-6 rounded-full border-2 border-dashed border-fencing-surface-light flex items-center justify-center">
-                                    <svg class="w-10 h-10 text-fencing-steel/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div class="w-16 h-16 sm:w-24 sm:h-24 mx-auto mb-4 sm:mb-6 rounded-full border-2 border-dashed border-fencing-surface-light flex items-center justify-center">
+                                    <svg class="w-7 h-7 sm:w-10 sm:h-10 text-fencing-steel/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                     </svg>
                                 </div>
-                                <p class="text-fencing-steel/50 text-sm">設定を確認して「開始」を押してください</p>
+                                <p class="text-fencing-steel/50 text-xs sm:text-sm">設定を確認して「開始」を押してください</p>
                             </div>
 
                             <!-- アクティブ状態（非表示） -->
                             <div id="active-state" class="hidden text-center">
                                 <!-- パルスリング -->
                                 <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                    <div class="w-64 h-64 rounded-full border border-fencing-gold/20 pulse-ring"></div>
+                                    <div class="w-40 h-40 sm:w-64 sm:h-64 rounded-full border border-fencing-gold/20 pulse-ring"></div>
                                 </div>
 
                                 <!-- コマンドテキスト -->
                                 <div class="relative">
-                                    <p class="text-fencing-gold/60 text-sm uppercase tracking-[0.3em] mb-2" id="command-label-fr">—</p>
-                                    <p class="font-display text-7xl md:text-8xl text-fencing-silver command-display tracking-wide" id="command-text">
+                                    <p class="text-fencing-gold/60 text-xs sm:text-sm uppercase tracking-[0.2em] sm:tracking-[0.3em] mb-1 sm:mb-2" id="command-label-fr">—</p>
+                                    <p class="font-display text-fencing-silver command-display command-text-responsive tracking-wide" id="command-text">
                                         —
                                     </p>
                                 </div>
@@ -317,11 +337,11 @@
                         <div class="blade-line"></div>
 
                         <!-- コントロールボタン -->
-                        <div class="relative px-6 py-6 flex justify-center gap-4">
+                        <div class="relative px-4 sm:px-6 py-4 sm:py-6 flex justify-center gap-3 sm:gap-4">
                             <button id="btn-start"
                                     type="submit"
                                     form="settings-form"
-                                    class="btn-primary px-8 py-3 rounded-lg font-medium text-fencing-dark flex items-center gap-2">
+                                    class="btn-primary px-6 sm:px-8 py-3 rounded-lg font-medium text-fencing-dark flex items-center gap-2 touch-target">
                                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M8 5v14l11-7z"></path>
                                 </svg>
@@ -329,7 +349,7 @@
                             </button>
 
                             <button id="btn-stop"
-                                    class="px-8 py-3 rounded-lg font-medium border border-fencing-surface-light text-fencing-steel hover:bg-fencing-surface-light transition-colors flex items-center gap-2 hidden"
+                                    class="px-6 sm:px-8 py-3 rounded-lg font-medium border border-fencing-surface-light text-fencing-steel hover:bg-fencing-surface-light transition-colors flex items-center gap-2 hidden touch-target"
                                     hx-post="/session/stop"
                                     hx-target="#session-container"
                                     hx-swap="innerHTML">
@@ -343,39 +363,39 @@
                     </section>
                 </div>
 
-                <!-- コマンド一覧（参考） -->
-                <section class="mt-6 bg-fencing-surface/30 rounded-xl border border-fencing-surface-light/50 p-5">
-                    <h3 class="text-xs font-medium text-fencing-steel/50 uppercase tracking-widest mb-4">Command Reference</h3>
-                    <div class="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
-                        <div class="flex items-center gap-2">
-                            <span class="w-2 h-2 rounded-full bg-fencing-gold/60"></span>
+                <!-- コマンド一覧（参考）- Hidden on mobile for cleaner UI -->
+                <section class="mt-4 sm:mt-6 bg-fencing-surface/30 rounded-xl border border-fencing-surface-light/50 p-4 sm:p-5 hidden sm:block">
+                    <h3 class="text-xs font-medium text-fencing-steel/50 uppercase tracking-widest mb-3 sm:mb-4">Command Reference</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3 text-xs sm:text-sm">
+                        <div class="flex items-center gap-1.5 sm:gap-2">
+                            <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-fencing-gold/60"></span>
                             <span class="text-fencing-steel/70">En garde</span>
                             <span class="text-fencing-steel/40">構え</span>
                         </div>
-                        <div class="flex items-center gap-2">
-                            <span class="w-2 h-2 rounded-full bg-emerald-500/60"></span>
+                        <div class="flex items-center gap-1.5 sm:gap-2">
+                            <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-500/60"></span>
                             <span class="text-fencing-steel/70">Marchez</span>
                             <span class="text-fencing-steel/40">前進</span>
                         </div>
-                        <div class="flex items-center gap-2">
-                            <span class="w-2 h-2 rounded-full bg-rose-500/60"></span>
+                        <div class="flex items-center gap-1.5 sm:gap-2">
+                            <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-rose-500/60"></span>
                             <span class="text-fencing-steel/70">Rompez</span>
                             <span class="text-fencing-steel/40">後退</span>
                         </div>
-                        <div class="flex items-center gap-2">
-                            <span class="w-2 h-2 rounded-full bg-sky-500/60"></span>
+                        <div class="flex items-center gap-1.5 sm:gap-2">
+                            <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-sky-500/60"></span>
                             <span class="text-fencing-steel/70">Fendez</span>
                             <span class="text-fencing-steel/40">突き</span>
                         </div>
-                        <div class="flex items-center gap-2">
-                            <span class="w-2 h-2 rounded-full bg-violet-500/60"></span>
-                            <span class="text-fencing-steel/70">Allongez le bras</span>
-                            <span class="text-fencing-steel/40">腕伸ばし</span>
+                        <div class="flex items-center gap-1.5 sm:gap-2">
+                            <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-violet-500/60"></span>
+                            <span class="text-fencing-steel/70 truncate">Allongez</span>
+                            <span class="text-fencing-steel/40">腕</span>
                         </div>
-                        <div class="flex items-center gap-2">
-                            <span class="w-2 h-2 rounded-full bg-amber-500/60"></span>
-                            <span class="text-fencing-steel/70">Remise en garde</span>
-                            <span class="text-fencing-steel/40">構え戻し</span>
+                        <div class="flex items-center gap-1.5 sm:gap-2">
+                            <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-amber-500/60"></span>
+                            <span class="text-fencing-steel/70 truncate">Remise</span>
+                            <span class="text-fencing-steel/40">戻し</span>
                         </div>
                     </div>
                 </section>
@@ -385,10 +405,10 @@
     </main>
 
     <!-- フッター -->
-    <footer class="border-t border-fencing-surface-light/30 mt-12">
-        <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center text-xs text-fencing-steel/40">
+    <footer class="border-t border-fencing-surface-light/30 mt-8 sm:mt-12">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex justify-between items-center text-[10px] sm:text-xs text-fencing-steel/40">
             <span>Fencing Drill v0.1</span>
-            <span>🤺 En garde!</span>
+            <span class="hidden sm:inline">🤺 En garde!</span>
         </div>
     </footer>
 
