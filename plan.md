@@ -280,7 +280,8 @@ fencing-drill/
 - [x] Localized Command Reference section
 - [x] Localized unit labels (times, seconds, minutes, sets)
 - [x] Auto-apply translations after htmx content swaps
-- [x] Tests (14 tests in `tests/test_i18n.py`)
+- [x] Browser language auto-detection (`navigator.language`, fallback: English)
+- [x] Tests (16 tests in `tests/test_i18n.py`)
 
 ---
 
@@ -326,7 +327,7 @@ fencing-drill/
 - [x] **Phase 4: Audio Files** (19 audio files, 43 tests)
 - [x] **Phase 5: Polish** (mobile responsiveness, error handling, session recovery, PWA)
 - [x] **Phase 6: Multi-language Support** (ja/en/fr, data-i18n attributes, language selector)
-- [x] Tests: 149 tests passing (TDD)
+- [x] Tests: 151 tests passing (TDD)
 
 ## Next Steps
 
