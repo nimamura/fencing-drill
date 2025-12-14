@@ -466,24 +466,40 @@
 
         // 練習開始時のUI更新
         function startTraining(sessionId) {
-            document.getElementById('idle-state').classList.add('hidden');
-            document.getElementById('active-state').classList.remove('hidden');
-            document.getElementById('btn-start').classList.add('hidden');
-            document.getElementById('btn-stop').classList.remove('hidden');
+            // Elements may not exist if HTML was already replaced by server response
+            const idleState = document.getElementById('idle-state');
+            const activeState = document.getElementById('active-state');
+            const btnStart = document.getElementById('btn-start');
+            const btnStop = document.getElementById('btn-stop');
+
+            if (idleState) idleState.classList.add('hidden');
+            if (activeState) activeState.classList.remove('hidden');
+            if (btnStart) btnStart.classList.add('hidden');
+            if (btnStop) btnStop.classList.remove('hidden');
 
             connectSSE(sessionId);
         }
 
         // 練習停止時のUI更新
         function stopTraining() {
-            document.getElementById('idle-state').classList.remove('hidden');
-            document.getElementById('active-state').classList.add('hidden');
-            document.getElementById('btn-start').classList.remove('hidden');
-            document.getElementById('btn-stop').classList.add('hidden');
-            document.getElementById('command-label-fr').textContent = '—';
-            document.getElementById('command-text').textContent = '—';
-            document.getElementById('remaining-time').textContent = '--:--';
-            document.getElementById('current-rep').textContent = '0 / --';
+            // Elements may not exist depending on current HTML state
+            const idleState = document.getElementById('idle-state');
+            const activeState = document.getElementById('active-state');
+            const btnStart = document.getElementById('btn-start');
+            const btnStop = document.getElementById('btn-stop');
+            const commandLabelFr = document.getElementById('command-label-fr');
+            const commandText = document.getElementById('command-text');
+            const remainingTime = document.getElementById('remaining-time');
+            const currentRep = document.getElementById('current-rep');
+
+            if (idleState) idleState.classList.remove('hidden');
+            if (activeState) activeState.classList.add('hidden');
+            if (btnStart) btnStart.classList.remove('hidden');
+            if (btnStop) btnStop.classList.add('hidden');
+            if (commandLabelFr) commandLabelFr.textContent = '—';
+            if (commandText) commandText.textContent = '—';
+            if (remainingTime) remainingTime.textContent = '--:--';
+            if (currentRep) currentRep.textContent = '0 / --';
 
             if (eventSource) {
                 eventSource.close();
