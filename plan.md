@@ -261,9 +261,9 @@ fencing-drill/
 - [x] htmx + SSE integration
 - [x] Audio playback JavaScript (`static/js/audio.js`)
 
-### Phase 4: Audio Files
-- [ ] Generate placeholder audio with TTS
-- [ ] Test audio playback timing
+### Phase 4: Audio Files ✅ DONE
+- [x] Generate placeholder audio with TTS (19 audio files generated)
+- [x] Test audio playback timing (43 tests in `tests/test_audio.py`)
 - [ ] (Optional) Replace with professional recordings
 
 ### Phase 5: Polish
@@ -312,9 +312,9 @@ fencing-drill/
 - [x] **Phase 1: Core Infrastructure** (FastAPI, Commands, Session, SSE)
 - [x] **Phase 2: Mode Implementation** (Combination, Interval, Random constraints)
 - [x] **Phase 3: Frontend Integration** (htmx + SSE, Settings panels, Audio JS)
-- [x] Tests: 62 tests passing (TDD)
+- [x] **Phase 4: Audio Files** (19 audio files, 43 tests)
+- [x] Tests: 105 tests passing (TDD)
 
 ## Next Steps
 
-1. **Audio Files** — Generate placeholder MP3s with TTS
-2. **Polish** — Error handling, mobile testing, PWA support
+1. **Polish** — Error handling, mobile testing, PWA support
