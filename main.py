@@ -7,9 +7,11 @@ from fastapi import FastAPI, Form, HTTPException, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from pydantic import BaseModel, ValidationError, field_validator, model_validator
 from sse_starlette.sse import EventSourceResponse
 
-from logic.commands import COMMANDS
+from logic.commands import COMMAND_SETS, COMMANDS
+from logic.generator import PATTERNS
 from logic.session import (
     BasicConfig,
     CombinationConfig,
@@ -20,6 +22,146 @@ from logic.session import (
     SessionStatus,
     TrainingMode,
 )
+
+
+# Validation constants
+MIN_TEMPO_BPM = 30
+MAX_TEMPO_BPM = 120
+MIN_REPETITIONS = 1
+MAX_REPETITIONS = 50
+MIN_DURATION_SECONDS = 1
+MAX_DURATION_SECONDS = 600
+MIN_INTERVAL_MS = 100
+MAX_INTERVAL_MS = 10000
+MIN_SETS = 1
+MAX_SETS = 10
+MIN_WORK_SECONDS = 5
+MAX_WORK_SECONDS = 120
+MIN_REST_SECONDS = 5
+MAX_REST_SECONDS = 60
+
+
+class SessionStartRequest(BaseModel):
+    """Validated request for starting a session."""
+
+    mode: str
+    command_id: str = "marche"
+    repetitions: int = 10
+    tempo_bpm: int = 60
+    command_set: str = "beginner"
+    duration_seconds: int = 60
+    min_interval_ms: int = 1000
+    max_interval_ms: int = 3000
+    pattern_id: str = "A"
+    work_seconds: int = 30
+    rest_seconds: int = 15
+    sets: int = 5
+
+    @field_validator("mode")
+    @classmethod
+    def validate_mode(cls, v: str) -> str:
+        valid_modes = [m.value for m in TrainingMode]
+        if v not in valid_modes:
+            raise ValueError(f"Invalid mode: {v}. Must be one of {valid_modes}")
+        return v
+
+    @field_validator("command_id")
+    @classmethod
+    def validate_command_id(cls, v: str) -> str:
+        if v not in COMMANDS:
+            raise ValueError(f"Invalid command_id: {v}")
+        return v
+
+    @field_validator("command_set")
+    @classmethod
+    def validate_command_set(cls, v: str) -> str:
+        if v not in COMMAND_SETS:
+            raise ValueError(f"Invalid command_set: {v}")
+        return v
+
+    @field_validator("pattern_id")
+    @classmethod
+    def validate_pattern_id(cls, v: str) -> str:
+        if v not in PATTERNS:
+            raise ValueError(f"Invalid pattern_id: {v}")
+        return v
+
+    @field_validator("repetitions")
+    @classmethod
+    def validate_repetitions(cls, v: int) -> int:
+        if v < MIN_REPETITIONS or v > MAX_REPETITIONS:
+            raise ValueError(
+                f"repetitions must be between {MIN_REPETITIONS} and {MAX_REPETITIONS}"
+            )
+        return v
+
+    @field_validator("tempo_bpm")
+    @classmethod
+    def validate_tempo_bpm(cls, v: int) -> int:
+        if v < MIN_TEMPO_BPM or v > MAX_TEMPO_BPM:
+            raise ValueError(
+                f"tempo_bpm must be between {MIN_TEMPO_BPM} and {MAX_TEMPO_BPM}"
+            )
+        return v
+
+    @field_validator("duration_seconds")
+    @classmethod
+    def validate_duration_seconds(cls, v: int) -> int:
+        if v < MIN_DURATION_SECONDS or v > MAX_DURATION_SECONDS:
+            raise ValueError(
+                f"duration_seconds must be between {MIN_DURATION_SECONDS} and {MAX_DURATION_SECONDS}"
+            )
+        return v
+
+    @field_validator("min_interval_ms")
+    @classmethod
+    def validate_min_interval_ms(cls, v: int) -> int:
+        if v < MIN_INTERVAL_MS or v > MAX_INTERVAL_MS:
+            raise ValueError(
+                f"min_interval_ms must be between {MIN_INTERVAL_MS} and {MAX_INTERVAL_MS}"
+            )
+        return v
+
+    @field_validator("max_interval_ms")
+    @classmethod
+    def validate_max_interval_ms(cls, v: int) -> int:
+        if v < MIN_INTERVAL_MS or v > MAX_INTERVAL_MS:
+            raise ValueError(
+                f"max_interval_ms must be between {MIN_INTERVAL_MS} and {MAX_INTERVAL_MS}"
+            )
+        return v
+
+    @field_validator("sets")
+    @classmethod
+    def validate_sets(cls, v: int) -> int:
+        if v < MIN_SETS or v > MAX_SETS:
+            raise ValueError(f"sets must be between {MIN_SETS} and {MAX_SETS}")
+        return v
+
+    @field_validator("work_seconds")
+    @classmethod
+    def validate_work_seconds(cls, v: int) -> int:
+        if v < MIN_WORK_SECONDS or v > MAX_WORK_SECONDS:
+            raise ValueError(
+                f"work_seconds must be between {MIN_WORK_SECONDS} and {MAX_WORK_SECONDS}"
+            )
+        return v
+
+    @field_validator("rest_seconds")
+    @classmethod
+    def validate_rest_seconds(cls, v: int) -> int:
+        if v < MIN_REST_SECONDS or v > MAX_REST_SECONDS:
+            raise ValueError(
+                f"rest_seconds must be between {MIN_REST_SECONDS} and {MAX_REST_SECONDS}"
+            )
+        return v
+
+    @model_validator(mode="after")
+    def validate_intervals(self) -> "SessionStartRequest":
+        """Validate that min_interval <= max_interval."""
+        if self.min_interval_ms > self.max_interval_ms:
+            raise ValueError("min_interval_ms must be <= max_interval_ms")
+        return self
 
 app = FastAPI(title="Fencing Drill")
 
@@ -69,35 +211,67 @@ async def start_session(
     sets: Annotated[int, Form()] = 5,
 ):
     """Start a training session."""
+    # Validate input using Pydantic model
+    try:
+        validated = SessionStartRequest(
+            mode=mode,
+            command_id=command_id,
+            repetitions=repetitions,
+            tempo_bpm=tempo_bpm,
+            command_set=command_set,
+            duration_seconds=duration_seconds,
+            min_interval_ms=min_interval_ms,
+            max_interval_ms=max_interval_ms,
+            pattern_id=pattern_id,
+            work_seconds=work_seconds,
+            rest_seconds=rest_seconds,
+            sets=sets,
+        )
+    except ValidationError as e:
+        # Convert validation errors to JSON-serializable format
+        errors = []
+        for error in e.errors():
+            err = {
+                "loc": error.get("loc", []),
+                "msg": error.get("msg", str(error)),
+                "type": error.get("type", "validation_error"),
+            }
+            errors.append(err)
+        raise HTTPException(status_code=422, detail=errors)
+
     # Stop any existing session
     active = session_manager.get_active_session()
     if active:
         active.stop()
 
     # Create config based on mode
-    training_mode = TrainingMode(mode)
+    training_mode = TrainingMode(validated.mode)
 
     if training_mode == TrainingMode.BASIC:
         config = BasicConfig(
-            command_id=command_id, repetitions=repetitions, tempo_bpm=tempo_bpm
+            command_id=validated.command_id,
+            repetitions=validated.repetitions,
+            tempo_bpm=validated.tempo_bpm,
         )
     elif training_mode == TrainingMode.RANDOM:
         config = RandomConfig(
-            command_set=command_set,
-            duration_seconds=duration_seconds,
-            min_interval_ms=min_interval_ms,
-            max_interval_ms=max_interval_ms,
+            command_set=validated.command_set,
+            duration_seconds=validated.duration_seconds,
+            min_interval_ms=validated.min_interval_ms,
+            max_interval_ms=validated.max_interval_ms,
         )
     elif training_mode == TrainingMode.COMBINATION:
         config = CombinationConfig(
-            pattern_id=pattern_id, repetitions=repetitions, tempo_bpm=tempo_bpm
+            pattern_id=validated.pattern_id,
+            repetitions=validated.repetitions,
+            tempo_bpm=validated.tempo_bpm,
         )
     elif training_mode == TrainingMode.INTERVAL:
         config = IntervalConfig(
-            work_seconds=work_seconds,
-            rest_seconds=rest_seconds,
-            sets=sets,
-            tempo_bpm=tempo_bpm,
+            work_seconds=validated.work_seconds,
+            rest_seconds=validated.rest_seconds,
+            sets=validated.sets,
+            tempo_bpm=validated.tempo_bpm,
         )
     else:
         config = BasicConfig()
@@ -238,6 +412,10 @@ async def session_stream(session_id: str):
     session = session_manager.get_session(session_id)
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")
+
+    # Check if session is already finished
+    if session.status == SessionStatus.FINISHED:
+        raise HTTPException(status_code=410, detail="Session has already finished")
 
     async def event_generator():
         """Generate SSE events for the session."""
