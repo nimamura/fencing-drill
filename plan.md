@@ -266,11 +266,11 @@ fencing-drill/
 - [x] Test audio playback timing (43 tests in `tests/test_audio.py`)
 - [ ] (Optional) Replace with professional recordings
 
-### Phase 5: Polish
-- [ ] Mobile responsiveness testing
-- [ ] Error handling
-- [ ] Session recovery on disconnect
-- [ ] PWA support (offline capability)
+### Phase 5: Polish ✅ DONE
+- [x] Mobile responsiveness (touch-friendly, responsive layouts)
+- [x] Error handling (input validation, SSE errors, 422/404/410 responses)
+- [x] Session recovery on disconnect (pause/resume, status API)
+- [x] PWA support (manifest, service worker, offline caching)
 
 ---
 
@@ -313,8 +313,9 @@ fencing-drill/
 - [x] **Phase 2: Mode Implementation** (Combination, Interval, Random constraints)
 - [x] **Phase 3: Frontend Integration** (htmx + SSE, Settings panels, Audio JS)
 - [x] **Phase 4: Audio Files** (19 audio files, 43 tests)
-- [x] Tests: 105 tests passing (TDD)
+- [x] **Phase 5: Polish** (mobile responsiveness, error handling, session recovery, PWA)
+- [x] Tests: 135 tests passing (TDD)
 
 ## Next Steps
 
-1. **Polish** — Error handling, mobile testing, PWA support
+1. **Optional improvements** — Professional audio recordings, additional features
