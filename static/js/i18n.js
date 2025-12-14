@@ -273,11 +273,31 @@ const DEFAULT_LANG = 'ja';
 const STORAGE_KEY = 'fencing-drill-lang';
 
 /**
- * Get current language from localStorage or default
+ * Detect browser language and return supported language code
+ * @returns {string} Language code (ja, en, or fr)
+ */
+function detectBrowserLang() {
+    const browserLang = navigator.language || navigator.userLanguage;
+    const langCode = browserLang.split('-')[0].toLowerCase();
+
+    if (TRANSLATIONS[langCode]) {
+        return langCode;
+    }
+    return 'en'; // Fallback to English
+}
+
+/**
+ * Get current language from localStorage or detect from browser
  * @returns {string} Language code (ja, en, or fr)
  */
 function getCurrentLang() {
-    return localStorage.getItem(STORAGE_KEY) || DEFAULT_LANG;
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored && TRANSLATIONS[stored]) {
+        return stored;
+    }
+    const detected = detectBrowserLang();
+    localStorage.setItem(STORAGE_KEY, detected);
+    return detected;
 }
 
 /**

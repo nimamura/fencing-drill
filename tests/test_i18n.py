@@ -158,6 +158,28 @@ class TestI18nJavaScriptFunctions:
 
         assert "/static/js/i18n.js" in content, "i18n.js should be included in index.html"
 
+    def test_i18n_js_has_detect_browser_lang_function(self):
+        """i18n.js should have detectBrowserLang function."""
+        i18n_path = os.path.join(
+            os.path.dirname(os.path.dirname(__file__)),
+            "static", "js", "i18n.js"
+        )
+        with open(i18n_path, "r", encoding="utf-8") as f:
+            content = f.read()
+
+        assert "detectBrowserLang" in content, "detectBrowserLang function should exist"
+
+    def test_i18n_js_uses_navigator_language(self):
+        """i18n.js should use navigator.language for browser detection."""
+        i18n_path = os.path.join(
+            os.path.dirname(os.path.dirname(__file__)),
+            "static", "js", "i18n.js"
+        )
+        with open(i18n_path, "r", encoding="utf-8") as f:
+            content = f.read()
+
+        assert "navigator.language" in content, "Should use navigator.language for detection"
+
 
 class TestCommandTranslations:
     """Tests for command name translations."""
