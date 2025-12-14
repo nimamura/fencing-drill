@@ -73,6 +73,7 @@ class Session:
     config: SessionConfig
     id: str = field(default_factory=lambda: str(uuid.uuid4()))
     status: SessionStatus = SessionStatus.IDLE
+    progress: dict = field(default_factory=dict)
 
     def start(self) -> None:
         """Start the session."""

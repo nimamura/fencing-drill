@@ -406,6 +406,43 @@ async def stop_session(request: Request):
     )
 
 
+@app.get("/session/status")
+async def get_session_status(session_id: str):
+    """Get the current status of a session."""
+    session = session_manager.get_session(session_id)
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    return {
+        "id": session.id,
+        "status": session.status.value,
+        "mode": session.mode.value,
+        "progress": session.progress,
+    }
+
+
+@app.post("/session/pause")
+async def pause_session(session_id: str):
+    """Pause a running session."""
+    session = session_manager.get_session(session_id)
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    session.pause()
+    return {"status": "paused", "session_id": session.id}
+
+
+@app.post("/session/resume")
+async def resume_session(session_id: str):
+    """Resume a paused session."""
+    session = session_manager.get_session(session_id)
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    session.resume()
+    return {"status": "running", "session_id": session.id}
+
+
 @app.get("/session/stream")
 async def session_stream(session_id: str):
     """SSE endpoint for real-time command streaming."""
@@ -416,6 +453,10 @@ async def session_stream(session_id: str):
     # Check if session is already finished
     if session.status == SessionStatus.FINISHED:
         raise HTTPException(status_code=410, detail="Session has already finished")
+
+    # Check if session is paused
+    if session.status == SessionStatus.PAUSED:
+        raise HTTPException(status_code=409, detail="Session is paused")
 
     async def event_generator():
         """Generate SSE events for the session."""
