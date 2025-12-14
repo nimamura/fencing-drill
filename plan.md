@@ -314,15 +314,16 @@ fencing-drill/
 - [x] **Phase 3: Frontend Integration** (htmx + SSE, Settings panels, Audio JS)
 - [x] **Phase 4: Audio Files** (19 audio files, 43 tests)
 - [x] **Phase 5: Polish** (mobile responsiveness, error handling, session recovery, PWA)
-- [x] Tests: 135 tests passing (TDD)
+- [x] **Phase 6: Multi-language Support** (ja/en/fr, data-i18n attributes, language selector)
+- [x] Tests: 149 tests passing (TDD)
 
 ## Next Steps
 
-1. **Phase 6: Multi-language Support** — 日本語/English/Français切り替え
+1. **Phase 7: Additional Features** — カスタムパターン作成、グループ練習対応など
 
 ---
 
-## Phase 6: Multi-language Support (計画中)
+## Phase 6: Multi-language Support ✅ DONE
 
 ### 概要
 ヘッダー右上に言語セレクターを配置し、UI全体を日本語・英語・フランス語に切り替え可能にする。
@@ -427,28 +428,28 @@ TRANSLATIONS = {
 ### 実装手順
 
 **Step 1: 翻訳データ作成**
-- [ ] `static/js/i18n.js` に翻訳データを定義
-- [ ] 全UIテキストのキーを洗い出し
-- [ ] 3言語分の翻訳を作成
+- [x] `static/js/i18n.js` に翻訳データを定義
+- [x] 全UIテキストのキーを洗い出し
+- [x] 3言語分の翻訳を作成
 
 **Step 2: HTML マーキング**
-- [ ] 翻訳対象要素に `data-i18n` 属性を追加
-- [ ] プレースホルダーテキストを設定
+- [x] 翻訳対象要素に `data-i18n` 属性を追加
+- [x] プレースホルダーテキストを設定
 
 **Step 3: 言語セレクター実装**
-- [ ] ヘッダーに言語ドロップダウンを追加
-- [ ] localStorage で言語設定を保存/復元
-- [ ] 言語変更イベントハンドラを実装
+- [x] ヘッダーに言語ドロップダウンを追加
+- [x] localStorage で言語設定を保存/復元
+- [x] 言語変更イベントハンドラを実装
 
 **Step 4: 翻訳適用ロジック**
-- [ ] `applyTranslations(lang)` 関数を実装
-- [ ] ページロード時に自動適用
-- [ ] htmx更新後にも再適用
+- [x] `applyTranslations(lang)` 関数を実装
+- [x] ページロード時に自動適用
+- [x] htmx更新後にも再適用
 
 **Step 5: テスト**
-- [ ] 各言語での表示確認
-- [ ] 言語切り替えの動作確認
-- [ ] localStorage永続化の確認
+- [x] 各言語での表示確認
+- [x] 言語切り替えの動作確認
+- [x] localStorage永続化の確認
 
 ### 注意事項
 

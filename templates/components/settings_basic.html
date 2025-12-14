@@ -1,39 +1,39 @@
 <div class="space-y-4 fade-in">
     <!-- 動作選択 -->
     <div>
-        <label class="block text-sm text-fencing-steel mb-2">動作</label>
+        <label class="block text-sm text-fencing-steel mb-2" data-i18n="settings.action">動作</label>
         <select name="command_id" class="w-full bg-fencing-surface-light border border-fencing-surface-light rounded-lg px-4 py-2.5 text-fencing-silver focus:outline-none focus:border-fencing-gold/50 transition-colors">
-            <option value="marche">マルシェ（前進）</option>
-            <option value="rompe">ロンペ（後退）</option>
-            <option value="fendez">ファンドゥ（突き）</option>
-            <option value="bond_avant">ボンナバン（跳躍前進）</option>
-            <option value="bond_arriere">ボンナリエール（跳躍後退）</option>
+            <option value="marche" data-i18n="command.option.marche">マルシェ（前進）</option>
+            <option value="rompe" data-i18n="command.option.rompe">ロンペ（後退）</option>
+            <option value="fendez" data-i18n="command.option.fendez">ファンドゥ（突き）</option>
+            <option value="bond_avant" data-i18n="command.option.bond_avant">ボンナバン（跳躍前進）</option>
+            <option value="bond_arriere" data-i18n="command.option.bond_arriere">ボンナリエール（跳躍後退）</option>
         </select>
     </div>
 
     <!-- テンポ -->
     <div>
         <div class="flex justify-between items-center mb-2">
-            <label class="text-sm text-fencing-steel">テンポ</label>
+            <label class="text-sm text-fencing-steel" data-i18n="settings.tempo">テンポ</label>
             <span class="text-sm text-fencing-gold font-medium" id="tempo-value">60 BPM</span>
         </div>
         <input type="range" name="tempo_bpm" min="30" max="120" value="60"
                class="w-full slider-track"
                oninput="document.getElementById('tempo-value').textContent = this.value + ' BPM'">
         <div class="flex justify-between text-xs text-fencing-steel/40 mt-1">
-            <span>ゆっくり</span>
-            <span>速い</span>
+            <span data-i18n="settings.tempo.slow">ゆっくり</span>
+            <span data-i18n="settings.tempo.fast">速い</span>
         </div>
     </div>
 
     <!-- 反復回数 -->
     <div>
         <div class="flex justify-between items-center mb-2">
-            <label class="text-sm text-fencing-steel">反復回数</label>
-            <span class="text-sm text-fencing-gold font-medium" id="reps-value">20 回</span>
+            <label class="text-sm text-fencing-steel" data-i18n="settings.reps">反復回数</label>
+            <span class="text-sm text-fencing-gold font-medium" id="reps-value">20 <span data-i18n="settings.reps.times">回</span></span>
         </div>
         <input type="range" name="repetitions" min="5" max="50" value="20" step="5"
                class="w-full slider-track"
-               oninput="document.getElementById('reps-value').textContent = this.value + ' 回'">
+               oninput="document.getElementById('reps-value').innerHTML = this.value + ' <span data-i18n=\'settings.reps.times\'>' + t('settings.reps.times') + '</span>'">
     </div>
 </div>

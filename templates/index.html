@@ -169,9 +169,17 @@
                         <p class="text-[10px] sm:text-xs text-fencing-steel/60 tracking-widest uppercase hidden sm:block">Training Assistant</p>
                     </div>
                 </div>
-                <div class="flex items-center gap-2 text-xs sm:text-sm text-fencing-steel/50" id="connection-status">
-                    <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-                    <span class="hidden sm:inline">準備完了</span>
+                <div class="flex items-center gap-3">
+                    <!-- Language Selector -->
+                    <select id="language-selector" class="bg-fencing-surface-light border border-fencing-surface-light rounded px-2 py-1 text-xs sm:text-sm text-fencing-silver focus:outline-none focus:border-fencing-gold/50">
+                        <option value="ja">日本語</option>
+                        <option value="en">English</option>
+                        <option value="fr">Français</option>
+                    </select>
+                    <div class="flex items-center gap-2 text-xs sm:text-sm text-fencing-steel/50" id="connection-status">
+                        <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+                        <span class="hidden sm:inline" data-i18n="header.ready">準備完了</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -201,8 +209,8 @@
                                     </svg>
                                 </div>
                                 <div class="text-center sm:text-left">
-                                    <div class="font-medium text-sm sm:text-base text-fencing-silver group-hover:text-fencing-gold transition-colors">基礎反復</div>
-                                    <div class="text-[10px] sm:text-xs text-fencing-steel/50 hidden sm:block">単一動作の反復練習</div>
+                                    <div class="font-medium text-sm sm:text-base text-fencing-silver group-hover:text-fencing-gold transition-colors" data-i18n="mode.basic">基礎反復</div>
+                                    <div class="text-[10px] sm:text-xs text-fencing-steel/50 hidden sm:block" data-i18n="mode.basic.desc">単一動作の反復練習</div>
                                 </div>
                             </div>
                         </button>
@@ -219,8 +227,8 @@
                                     </svg>
                                 </div>
                                 <div class="text-center sm:text-left">
-                                    <div class="font-medium text-sm sm:text-base text-fencing-silver group-hover:text-fencing-gold transition-colors">コンビネーション</div>
-                                    <div class="text-[10px] sm:text-xs text-fencing-steel/50 hidden sm:block">パターン練習</div>
+                                    <div class="font-medium text-sm sm:text-base text-fencing-silver group-hover:text-fencing-gold transition-colors" data-i18n="mode.combination">コンビネーション</div>
+                                    <div class="text-[10px] sm:text-xs text-fencing-steel/50 hidden sm:block" data-i18n="mode.combination.desc">パターン練習</div>
                                 </div>
                             </div>
                         </button>
@@ -237,8 +245,8 @@
                                     </svg>
                                 </div>
                                 <div class="text-center sm:text-left">
-                                    <div class="font-medium text-sm sm:text-base text-fencing-silver group-hover:text-fencing-gold transition-colors">ランダム</div>
-                                    <div class="text-[10px] sm:text-xs text-fencing-steel/50 hidden sm:block">反応速度トレーニング</div>
+                                    <div class="font-medium text-sm sm:text-base text-fencing-silver group-hover:text-fencing-gold transition-colors" data-i18n="mode.random">ランダム</div>
+                                    <div class="text-[10px] sm:text-xs text-fencing-steel/50 hidden sm:block" data-i18n="mode.random.desc">反応速度トレーニング</div>
                                 </div>
                             </div>
                         </button>
@@ -255,8 +263,8 @@
                                     </svg>
                                 </div>
                                 <div class="text-center sm:text-left">
-                                    <div class="font-medium text-sm sm:text-base text-fencing-silver group-hover:text-fencing-gold transition-colors">インターバル</div>
-                                    <div class="text-[10px] sm:text-xs text-fencing-steel/50 hidden sm:block">高強度トレーニング</div>
+                                    <div class="font-medium text-sm sm:text-base text-fencing-silver group-hover:text-fencing-gold transition-colors" data-i18n="mode.interval">インターバル</div>
+                                    <div class="text-[10px] sm:text-xs text-fencing-steel/50 hidden sm:block" data-i18n="mode.interval.desc">高強度トレーニング</div>
                                 </div>
                             </div>
                         </button>
@@ -321,7 +329,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                     </svg>
                                 </div>
-                                <p class="text-fencing-steel/50 text-xs sm:text-sm">設定を確認して「開始」を押してください</p>
+                                <p class="text-fencing-steel/50 text-xs sm:text-sm" data-i18n="status.idle">設定を確認して「開始」を押してください</p>
                             </div>
 
                             <!-- アクティブ状態（非表示） -->
@@ -354,7 +362,7 @@
                                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M8 5v14l11-7z"></path>
                                 </svg>
-                                開始
+                                <span data-i18n="button.start">開始</span>
                             </button>
 
                             <button id="btn-stop"
@@ -365,7 +373,7 @@
                                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M6 6h12v12H6z"></path>
                                 </svg>
-                                停止
+                                <span data-i18n="button.stop">停止</span>
                             </button>
                         </div>
 
@@ -374,37 +382,37 @@
 
                 <!-- コマンド一覧（参考）- Hidden on mobile for cleaner UI -->
                 <section class="mt-4 sm:mt-6 bg-fencing-surface/30 rounded-xl border border-fencing-surface-light/50 p-4 sm:p-5 hidden sm:block">
-                    <h3 class="text-xs font-medium text-fencing-steel/50 uppercase tracking-widest mb-3 sm:mb-4">Command Reference</h3>
+                    <h3 class="text-xs font-medium text-fencing-steel/50 uppercase tracking-widest mb-3 sm:mb-4" data-i18n="section.command_ref">Command Reference</h3>
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3 text-xs sm:text-sm">
                         <div class="flex items-center gap-1.5 sm:gap-2">
                             <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-fencing-gold/60"></span>
                             <span class="text-fencing-steel/70">En garde</span>
-                            <span class="text-fencing-steel/40">構え</span>
+                            <span class="text-fencing-steel/40" data-i18n="command.en_garde.desc">構え</span>
                         </div>
                         <div class="flex items-center gap-1.5 sm:gap-2">
                             <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-500/60"></span>
                             <span class="text-fencing-steel/70">Marchez</span>
-                            <span class="text-fencing-steel/40">前進</span>
+                            <span class="text-fencing-steel/40" data-i18n="command.marche.desc">前進</span>
                         </div>
                         <div class="flex items-center gap-1.5 sm:gap-2">
                             <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-rose-500/60"></span>
                             <span class="text-fencing-steel/70">Rompez</span>
-                            <span class="text-fencing-steel/40">後退</span>
+                            <span class="text-fencing-steel/40" data-i18n="command.rompe.desc">後退</span>
                         </div>
                         <div class="flex items-center gap-1.5 sm:gap-2">
                             <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-sky-500/60"></span>
                             <span class="text-fencing-steel/70">Fendez</span>
-                            <span class="text-fencing-steel/40">突き</span>
+                            <span class="text-fencing-steel/40" data-i18n="command.fendez.desc">突き</span>
                         </div>
                         <div class="flex items-center gap-1.5 sm:gap-2">
                             <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-violet-500/60"></span>
                             <span class="text-fencing-steel/70 truncate">Allongez</span>
-                            <span class="text-fencing-steel/40">腕</span>
+                            <span class="text-fencing-steel/40" data-i18n="command.allongez.desc">腕</span>
                         </div>
                         <div class="flex items-center gap-1.5 sm:gap-2">
                             <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-amber-500/60"></span>
                             <span class="text-fencing-steel/70 truncate">Remise</span>
-                            <span class="text-fencing-steel/40">戻し</span>
+                            <span class="text-fencing-steel/40" data-i18n="command.remise.desc">戻し</span>
                         </div>
                     </div>
                 </section>
@@ -422,6 +430,7 @@
     </footer>
 
     <script src="/static/js/audio.js"></script>
+    <script src="/static/js/i18n.js"></script>
     <script>
         // 現在選択されているモード
         let currentMode = 'basic';
@@ -462,7 +471,7 @@
 
             eventSource.addEventListener('command', function(e) {
                 const data = JSON.parse(e.data);
-                updateCommand(data.fr, data.jp);
+                updateCommand(data.id, data.fr);
                 playAudio(data.audio);
             });
 
@@ -537,9 +546,12 @@
         }
 
         // コマンド更新
-        function updateCommand(frLabel, jpText) {
+        function updateCommand(commandId, frLabel) {
             document.getElementById('command-label-fr').textContent = frLabel;
-            document.getElementById('command-text').textContent = jpText;
+            // 現在の言語に応じたコマンド名を表示
+            const translationKey = 'command.' + commandId;
+            const localizedName = t(translationKey);
+            document.getElementById('command-text').textContent = localizedName !== translationKey ? localizedName : frLabel;
         }
 
         // htmxイベントリスナー - セッション開始後にSSE接続

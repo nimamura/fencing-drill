@@ -1,48 +1,48 @@
 <div class="space-y-4 fade-in">
     <!-- コマンドセット -->
     <div>
-        <label class="block text-sm text-fencing-steel mb-2">レベル</label>
+        <label class="block text-sm text-fencing-steel mb-2" data-i18n="settings.level">レベル</label>
         <select name="command_set" class="w-full bg-fencing-surface-light border border-fencing-surface-light rounded-lg px-4 py-2.5 text-fencing-silver focus:outline-none focus:border-fencing-gold/50 transition-colors">
-            <option value="beginner">初級（マルシェ、ロンペ）</option>
-            <option value="intermediate">中級（+ ファンドゥ、ルミーズ）</option>
-            <option value="advanced">上級（+ ボンナバン、ボンナリエール、バランセ）</option>
+            <option value="beginner" data-i18n="settings.level.beginner">初級（マルシェ、ロンペ）</option>
+            <option value="intermediate" data-i18n="settings.level.intermediate">中級（+ ファンドゥ、ルミーズ）</option>
+            <option value="advanced" data-i18n="settings.level.advanced">上級（+ ボンナバン、ボンナリエール、バランセ）</option>
         </select>
     </div>
 
     <!-- 練習時間 -->
     <div>
         <div class="flex justify-between items-center mb-2">
-            <label class="text-sm text-fencing-steel">練習時間</label>
-            <span class="text-sm text-fencing-gold font-medium" id="duration-value">1 分</span>
+            <label class="text-sm text-fencing-steel" data-i18n="settings.duration">練習時間</label>
+            <span class="text-sm text-fencing-gold font-medium" id="duration-value">1 <span data-i18n="unit.minutes">分</span></span>
         </div>
         <input type="range" name="duration_seconds" min="60" max="600" value="60" step="30"
                class="w-full slider-track"
-               oninput="document.getElementById('duration-value').textContent = Math.floor(this.value / 60) + ' 分' + (this.value % 60 ? ' ' + (this.value % 60) + ' 秒' : '')">
+               oninput="var min = Math.floor(this.value / 60); var sec = this.value % 60; document.getElementById('duration-value').innerHTML = min + ' ' + t('unit.minutes') + (sec ? ' ' + sec + ' ' + t('unit.seconds') : '')">
         <div class="flex justify-between text-xs text-fencing-steel/40 mt-1">
-            <span>1分</span>
-            <span>10分</span>
+            <span>1 <span data-i18n="unit.minutes">分</span></span>
+            <span>10 <span data-i18n="unit.minutes">分</span></span>
         </div>
     </div>
 
     <!-- 最小間隔 -->
     <div>
         <div class="flex justify-between items-center mb-2">
-            <label class="text-sm text-fencing-steel">最小間隔</label>
-            <span class="text-sm text-fencing-gold font-medium" id="min-interval-value">1.0 秒</span>
+            <label class="text-sm text-fencing-steel" data-i18n="settings.min_interval">最小間隔</label>
+            <span class="text-sm text-fencing-gold font-medium" id="min-interval-value">1.0 <span data-i18n="unit.seconds">秒</span></span>
         </div>
         <input type="range" name="min_interval_ms" min="500" max="3000" value="1000" step="100"
                class="w-full slider-track"
-               oninput="document.getElementById('min-interval-value').textContent = (this.value / 1000).toFixed(1) + ' 秒'">
+               oninput="document.getElementById('min-interval-value').innerHTML = (this.value / 1000).toFixed(1) + ' <span data-i18n=\'unit.seconds\'>' + t('unit.seconds') + '</span>'">
     </div>
 
     <!-- 最大間隔 -->
     <div>
         <div class="flex justify-between items-center mb-2">
-            <label class="text-sm text-fencing-steel">最大間隔</label>
-            <span class="text-sm text-fencing-gold font-medium" id="max-interval-value">3.0 秒</span>
+            <label class="text-sm text-fencing-steel" data-i18n="settings.max_interval">最大間隔</label>
+            <span class="text-sm text-fencing-gold font-medium" id="max-interval-value">3.0 <span data-i18n="unit.seconds">秒</span></span>
         </div>
         <input type="range" name="max_interval_ms" min="1000" max="5000" value="3000" step="100"
                class="w-full slider-track"
-               oninput="document.getElementById('max-interval-value').textContent = (this.value / 1000).toFixed(1) + ' 秒'">
+               oninput="document.getElementById('max-interval-value').innerHTML = (this.value / 1000).toFixed(1) + ' <span data-i18n=\'unit.seconds\'>' + t('unit.seconds') + '</span>'">
     </div>
 </div>
