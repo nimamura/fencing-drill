@@ -1,0 +1,57 @@
+<div class="space-y-4 fade-in">
+    <!-- 高強度時間 -->
+    <div>
+        <div class="flex justify-between items-center mb-2">
+            <label class="text-sm text-fencing-steel">高強度時間</label>
+            <span class="text-sm text-fencing-gold font-medium" id="work-value">30 秒</span>
+        </div>
+        <input type="range" name="work_seconds" min="15" max="60" value="30" step="5"
+               class="w-full slider-track"
+               oninput="document.getElementById('work-value').textContent = this.value + ' 秒'">
+        <div class="flex justify-between text-xs text-fencing-steel/40 mt-1">
+            <span>15秒</span>
+            <span>60秒</span>
+        </div>
+    </div>
+
+    <!-- 休憩時間 -->
+    <div>
+        <div class="flex justify-between items-center mb-2">
+            <label class="text-sm text-fencing-steel">休憩時間</label>
+            <span class="text-sm text-fencing-gold font-medium" id="rest-value">15 秒</span>
+        </div>
+        <input type="range" name="rest_seconds" min="10" max="30" value="15" step="5"
+               class="w-full slider-track"
+               oninput="document.getElementById('rest-value').textContent = this.value + ' 秒'">
+        <div class="flex justify-between text-xs text-fencing-steel/40 mt-1">
+            <span>10秒</span>
+            <span>30秒</span>
+        </div>
+    </div>
+
+    <!-- セット数 -->
+    <div>
+        <div class="flex justify-between items-center mb-2">
+            <label class="text-sm text-fencing-steel">セット数</label>
+            <span class="text-sm text-fencing-gold font-medium" id="sets-value">5 セット</span>
+        </div>
+        <input type="range" name="sets" min="3" max="10" value="5"
+               class="w-full slider-track"
+               oninput="document.getElementById('sets-value').textContent = this.value + ' セット'">
+    </div>
+
+    <!-- テンポ -->
+    <div>
+        <div class="flex justify-between items-center mb-2">
+            <label class="text-sm text-fencing-steel">高強度時テンポ</label>
+            <span class="text-sm text-fencing-gold font-medium" id="tempo-value">90 BPM</span>
+        </div>
+        <input type="range" name="tempo_bpm" min="60" max="120" value="90"
+               class="w-full slider-track"
+               oninput="document.getElementById('tempo-value').textContent = this.value + ' BPM'">
+        <div class="flex justify-between text-xs text-fencing-steel/40 mt-1">
+            <span>60 BPM</span>
+            <span>120 BPM</span>
+        </div>
+    </div>
+</div>

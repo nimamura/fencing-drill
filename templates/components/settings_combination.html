@@ -1,0 +1,37 @@
+<div class="space-y-4 fade-in">
+    <!-- パターン選択 -->
+    <div>
+        <label class="block text-sm text-fencing-steel mb-2">パターン</label>
+        <select name="pattern_id" class="w-full bg-fencing-surface-light border border-fencing-surface-light rounded-lg px-4 py-2.5 text-fencing-silver focus:outline-none focus:border-fencing-gold/50 transition-colors">
+            <option value="A">A: 前進攻撃（マルシェ→マルシェ→ファンドゥ→ルミーズ）</option>
+            <option value="B">B: 後退からの反撃（ロンペ→ロンペ→マルシェ→ファンドゥ→ルミーズ）</option>
+            <option value="C">C: フットワーク強化（マルシェ→マルシェ→ロンペ→マルシェ→ロンペ→ロンペ）</option>
+        </select>
+    </div>
+
+    <!-- テンポ -->
+    <div>
+        <div class="flex justify-between items-center mb-2">
+            <label class="text-sm text-fencing-steel">テンポ</label>
+            <span class="text-sm text-fencing-gold font-medium" id="tempo-value">60 BPM</span>
+        </div>
+        <input type="range" name="tempo_bpm" min="30" max="120" value="60"
+               class="w-full slider-track"
+               oninput="document.getElementById('tempo-value').textContent = this.value + ' BPM'">
+        <div class="flex justify-between text-xs text-fencing-steel/40 mt-1">
+            <span>ゆっくり</span>
+            <span>速い</span>
+        </div>
+    </div>
+
+    <!-- 繰り返し回数 -->
+    <div>
+        <div class="flex justify-between items-center mb-2">
+            <label class="text-sm text-fencing-steel">繰り返し回数</label>
+            <span class="text-sm text-fencing-gold font-medium" id="reps-value">5 回</span>
+        </div>
+        <input type="range" name="repetitions" min="1" max="20" value="5"
+               class="w-full slider-track"
+               oninput="document.getElementById('reps-value').textContent = this.value + ' 回'">
+    </div>
+</div>
