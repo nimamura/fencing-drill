@@ -244,8 +244,14 @@ async def session_stream(session_id: str):
         import json
         import random
 
+        from logic.commands import COMMAND_SETS
+        from logic.generator import (
+            generate_combination,
+            get_post_command_delay,
+            select_constrained_command,
+        )
+
         config = session.config
-        rep = 0
 
         # Send initial en_garde
         en_garde = COMMANDS["en_garde"]
@@ -277,20 +283,51 @@ async def session_stream(session_id: str):
                 }
                 await asyncio.sleep(interval)
 
-        elif isinstance(config, RandomConfig):
-            # Random mode: random commands from set
-            from logic.commands import COMMAND_SETS
+        elif isinstance(config, CombinationConfig):
+            # Combination mode: execute preset pattern
+            command_ids = generate_combination(config)
+            interval = 60.0 / config.tempo_bpm
+            total = len(command_ids)
 
+            for i, cmd_id in enumerate(command_ids):
+                if session.status != SessionStatus.RUNNING:
+                    break
+
+                rep = i + 1
+                cmd = COMMANDS[cmd_id]
+
+                yield {
+                    "event": "status",
+                    "data": json.dumps({"rep": rep, "total": total}),
+                }
+                yield {
+                    "event": "command",
+                    "data": json.dumps(cmd.to_dict()),
+                }
+                await asyncio.sleep(interval)
+
+        elif isinstance(config, RandomConfig):
+            # Random mode: random commands with constraints
             command_ids = COMMAND_SETS.get(config.command_set, ["marche", "rompe"])
             start_time = asyncio.get_event_loop().time()
             end_time = start_time + config.duration_seconds
+
+            history: list[str] = []
+            last_cmd: str | None = None
 
             while (
                 asyncio.get_event_loop().time() < end_time
                 and session.status == SessionStatus.RUNNING
             ):
-                cmd_id = random.choice(command_ids)
+                # Select command with constraints
+                cmd_id = select_constrained_command(command_ids, history, last_cmd)
                 cmd = COMMANDS[cmd_id]
+
+                # Update history
+                history.append(cmd_id)
+                if len(history) > 10:  # Keep last 10 for efficiency
+                    history.pop(0)
+                last_cmd = cmd_id
 
                 remaining = int(end_time - asyncio.get_event_loop().time())
                 mins, secs = divmod(remaining, 60)
@@ -304,10 +341,95 @@ async def session_stream(session_id: str):
                     "data": json.dumps(cmd.to_dict()),
                 }
 
-                interval = random.randint(
+                # Calculate interval with bond delay
+                base_interval = random.randint(
                     config.min_interval_ms, config.max_interval_ms
                 ) / 1000.0
+                interval = get_post_command_delay(cmd_id, base_interval)
                 await asyncio.sleep(interval)
+
+        elif isinstance(config, IntervalConfig):
+            # Interval mode: work/rest cycles
+            command_ids = COMMAND_SETS["intermediate"]
+            work_interval = 60.0 / config.tempo_bpm
+
+            for set_num in range(1, config.sets + 1):
+                if session.status != SessionStatus.RUNNING:
+                    break
+
+                # Work phase
+                history: list[str] = []
+                last_cmd: str | None = None
+                work_start = asyncio.get_event_loop().time()
+                work_end = work_start + config.work_seconds
+
+                while (
+                    asyncio.get_event_loop().time() < work_end
+                    and session.status == SessionStatus.RUNNING
+                ):
+                    cmd_id = select_constrained_command(command_ids, history, last_cmd)
+                    cmd = COMMANDS[cmd_id]
+
+                    history.append(cmd_id)
+                    if len(history) > 10:
+                        history.pop(0)
+                    last_cmd = cmd_id
+
+                    remaining = int(work_end - asyncio.get_event_loop().time())
+
+                    yield {
+                        "event": "status",
+                        "data": json.dumps({
+                            "set": set_num,
+                            "total_sets": config.sets,
+                            "phase": "work",
+                            "remaining": f"0:{remaining:02d}",
+                        }),
+                    }
+                    yield {
+                        "event": "command",
+                        "data": json.dumps(cmd.to_dict()),
+                    }
+
+                    interval = get_post_command_delay(cmd_id, work_interval)
+                    await asyncio.sleep(interval)
+
+                # Rest phase (except after last set)
+                if set_num < config.sets and session.status == SessionStatus.RUNNING:
+                    # Send rest command
+                    yield {
+                        "event": "status",
+                        "data": json.dumps({
+                            "set": set_num,
+                            "total_sets": config.sets,
+                            "phase": "rest",
+                            "remaining": f"0:{config.rest_seconds:02d}",
+                        }),
+                    }
+                    yield {
+                        "event": "command",
+                        "data": json.dumps({
+                            "id": "rest",
+                            "fr": "Repos",
+                            "jp": "休憩",
+                            "audio": "/static/audio/repos.mp3",
+                        }),
+                    }
+
+                    # Countdown during rest
+                    for remaining in range(config.rest_seconds, 0, -1):
+                        if session.status != SessionStatus.RUNNING:
+                            break
+                        yield {
+                            "event": "status",
+                            "data": json.dumps({
+                                "set": set_num,
+                                "total_sets": config.sets,
+                                "phase": "rest",
+                                "remaining": f"0:{remaining:02d}",
+                            }),
+                        }
+                        await asyncio.sleep(1)
 
         # Send end event
         yield {"event": "end", "data": json.dumps({"message": "終了"})}

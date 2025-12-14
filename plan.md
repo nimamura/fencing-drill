@@ -245,14 +245,15 @@ fencing-drill/
 - [x] Command definitions (`logic/commands.py`)
 - [x] Basic session management (`logic/session.py`)
 - [x] SSE endpoint implementation
-- [x] Tests (41 tests passing)
+- [x] Tests (41 tests)
 
-### Phase 2: Mode Implementation
+### Phase 2: Mode Implementation ✅ DONE
 - [x] Basic mode generator (implemented in SSE stream)
 - [x] Random mode generator (implemented in SSE stream)
-- [ ] Combination mode generator
-- [ ] Interval mode generator
-- [ ] Random mode constraints (壁対策、ファンドゥ後のルミーズ等)
+- [x] Combination mode generator (`logic/generator.py`)
+- [x] Interval mode generator (`logic/generator.py`)
+- [x] Random mode constraints (壁対策、ファンドゥ後のルミーズ、ボンド後の遅延)
+- [x] Tests (21 tests in `tests/test_generator.py`)
 
 ### Phase 3: Frontend Integration ✅ DONE
 - [x] Dashboard HTML (`templates/index.html`)
@@ -309,12 +310,11 @@ fencing-drill/
 - [x] Dashboard HTML (Tailwind + htmx)
 - [x] CLAUDE.md
 - [x] **Phase 1: Core Infrastructure** (FastAPI, Commands, Session, SSE)
+- [x] **Phase 2: Mode Implementation** (Combination, Interval, Random constraints)
 - [x] **Phase 3: Frontend Integration** (htmx + SSE, Settings panels, Audio JS)
-- [x] Tests: 41 tests passing (TDD)
+- [x] Tests: 62 tests passing (TDD)
 
 ## Next Steps
 
-1. **Combination/Interval Generators** — Complete remaining mode logic
-2. **Random Mode Constraints** — 壁対策、ファンドゥ後のルミーズ等
-3. **Audio Files** — Generate placeholder MP3s with TTS
-4. **Polish** — Error handling, mobile testing
+1. **Audio Files** — Generate placeholder MP3s with TTS
+2. **Polish** — Error handling, mobile testing, PWA support
