@@ -209,10 +209,10 @@
                 <!-- モード選択 -->
                 <section>
                     <h2 class="text-xs font-medium text-fencing-steel/50 uppercase tracking-widest mb-3 sm:mb-4">Training Mode</h2>
-                    <!-- Horizontal scroll on mobile, vertical list on desktop -->
-                    <div class="flex sm:flex-col gap-2 sm:gap-3 overflow-x-auto sm:overflow-visible pb-2 sm:pb-0 -mx-4 px-4 sm:mx-0 sm:px-0" id="mode-selector">
+                    <!-- 2-column grid on mobile, single column on desktop -->
+                    <div class="grid grid-cols-2 sm:grid-cols-1 gap-2 sm:gap-3" id="mode-selector">
 
-                        <button class="mode-card active flex-shrink-0 w-[140px] sm:w-full p-3 sm:p-4 rounded-lg border border-fencing-gold/30 text-left group touch-target"
+                        <button class="mode-card active w-full p-3 sm:p-4 rounded-lg border border-fencing-gold/30 text-left group touch-target"
                                 hx-get="/settings/basic"
                                 hx-target="#settings-panel"
                                 hx-swap="innerHTML"
@@ -230,7 +230,7 @@
                             </div>
                         </button>
 
-                        <button class="mode-card flex-shrink-0 w-[140px] sm:w-full p-3 sm:p-4 rounded-lg border border-fencing-surface-light text-left group touch-target"
+                        <button class="mode-card w-full p-3 sm:p-4 rounded-lg border border-fencing-surface-light text-left group touch-target"
                                 hx-get="/settings/combination"
                                 hx-target="#settings-panel"
                                 hx-swap="innerHTML"
@@ -248,7 +248,7 @@
                             </div>
                         </button>
 
-                        <button class="mode-card flex-shrink-0 w-[140px] sm:w-full p-3 sm:p-4 rounded-lg border border-fencing-surface-light text-left group touch-target"
+                        <button class="mode-card w-full p-3 sm:p-4 rounded-lg border border-fencing-surface-light text-left group touch-target"
                                 hx-get="/settings/random"
                                 hx-target="#settings-panel"
                                 hx-swap="innerHTML"
@@ -266,7 +266,7 @@
                             </div>
                         </button>
 
-                        <button class="mode-card flex-shrink-0 w-[140px] sm:w-full p-3 sm:p-4 rounded-lg border border-fencing-surface-light text-left group touch-target"
+                        <button class="mode-card w-full p-3 sm:p-4 rounded-lg border border-fencing-surface-light text-left group touch-target"
                                 hx-get="/settings/interval"
                                 hx-target="#settings-panel"
                                 hx-swap="innerHTML"
