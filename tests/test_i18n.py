@@ -201,3 +201,77 @@ class TestCommandTranslations:
         ]
         for key in command_keys:
             assert key in content, f"Command translation key '{key}' should be defined"
+
+    def test_balancez_translation_exists(self):
+        """command.balancez should be defined in all languages."""
+        i18n_path = os.path.join(
+            os.path.dirname(os.path.dirname(__file__)),
+            "static", "js", "i18n.js"
+        )
+        with open(i18n_path, "r", encoding="utf-8") as f:
+            content = f.read()
+
+        assert '"command.balancez"' in content, "command.balancez should be defined"
+
+    def test_balancez_japanese_description_is_correct(self):
+        """Balancez Japanese description should be '揺れ動作'."""
+        i18n_path = os.path.join(
+            os.path.dirname(os.path.dirname(__file__)),
+            "static", "js", "i18n.js"
+        )
+        with open(i18n_path, "r", encoding="utf-8") as f:
+            content = f.read()
+
+        assert "揺れ動作" in content, "Balancez Japanese description should be '揺れ動作'"
+
+    def test_all_commands_have_desc_translations(self):
+        """All commands should have .desc translation keys."""
+        i18n_path = os.path.join(
+            os.path.dirname(os.path.dirname(__file__)),
+            "static", "js", "i18n.js"
+        )
+        with open(i18n_path, "r", encoding="utf-8") as f:
+            content = f.read()
+
+        command_ids = [
+            "en_garde", "marche", "rompe", "fendez", "allongez",
+            "remise", "bond_avant", "bond_arriere", "balancez", "double_marche", "fleche"
+        ]
+        for cmd_id in command_ids:
+            desc_key = f'"command.{cmd_id}.desc"'
+            assert desc_key in content, f"{desc_key} should be defined"
+
+    def test_double_marche_translation_exists(self):
+        """command.double_marche should be defined."""
+        i18n_path = os.path.join(
+            os.path.dirname(os.path.dirname(__file__)),
+            "static", "js", "i18n.js"
+        )
+        with open(i18n_path, "r", encoding="utf-8") as f:
+            content = f.read()
+
+        assert '"command.double_marche"' in content, "command.double_marche should be defined"
+        assert '"command.double_marche.desc"' in content, "command.double_marche.desc should be defined"
+
+    def test_fleche_translation_exists(self):
+        """command.fleche should be defined in all languages."""
+        i18n_path = os.path.join(
+            os.path.dirname(os.path.dirname(__file__)),
+            "static", "js", "i18n.js"
+        )
+        with open(i18n_path, "r", encoding="utf-8") as f:
+            content = f.read()
+
+        assert '"command.fleche"' in content, "command.fleche should be defined"
+        assert '"command.fleche.desc"' in content, "command.fleche.desc should be defined"
+
+    def test_fleche_japanese_description_is_correct(self):
+        """Fleche Japanese description should be '走り突き'."""
+        i18n_path = os.path.join(
+            os.path.dirname(os.path.dirname(__file__)),
+            "static", "js", "i18n.js"
+        )
+        with open(i18n_path, "r", encoding="utf-8") as f:
+            content = f.read()
+
+        assert "走り突き" in content, "Fleche Japanese description should be '走り突き'"

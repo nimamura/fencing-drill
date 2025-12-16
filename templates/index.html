@@ -563,10 +563,24 @@
         // コマンド更新
         function updateCommand(commandId, frLabel) {
             document.getElementById('command-label-fr').textContent = frLabel;
-            // 現在の言語に応じたコマンド名を表示
+            const currentLang = getCurrentLang();
             const translationKey = 'command.' + commandId;
             const localizedName = t(translationKey);
-            document.getElementById('command-text').textContent = localizedName !== translationKey ? localizedName : frLabel;
+            const commandTextEl = document.getElementById('command-text');
+
+            if (currentLang === 'ja') {
+                // 日本語モード: カタカナ + 改行 + （日本語訳）形式
+                const descKey = 'command.' + commandId + '.desc';
+                const description = t(descKey);
+                if (description !== descKey && localizedName !== translationKey) {
+                    commandTextEl.innerHTML = localizedName + '<br><span class="text-4xl sm:text-5xl">（' + description + '）</span>';
+                } else {
+                    commandTextEl.textContent = localizedName !== translationKey ? localizedName : frLabel;
+                }
+            } else {
+                // 英語/フランス語: ローカライズ名のみ
+                commandTextEl.textContent = localizedName !== translationKey ? localizedName : frLabel;
+            }
         }
 
         // htmxイベントリスナー - セッション開始後にSSE接続

@@ -77,6 +77,12 @@ const TRANSLATIONS = {
         "command.bond_avant.desc": "跳躍前進",
         "command.bond_arriere": "ボンナリエール",
         "command.bond_arriere.desc": "跳躍後退",
+        "command.balancez": "バランセ",
+        "command.balancez.desc": "揺れ動作",
+        "command.double_marche": "ドゥブル・マルシェ",
+        "command.double_marche.desc": "二歩前進",
+        "command.fleche": "フレッシュ",
+        "command.fleche.desc": "走り突き",
 
         // Command options in settings
         "command.option.marche": "マルシェ（前進）",
@@ -165,6 +171,12 @@ const TRANSLATIONS = {
         "command.bond_avant.desc": "Leap fwd",
         "command.bond_arriere": "Jump back",
         "command.bond_arriere.desc": "Leap back",
+        "command.balancez": "Balancez",
+        "command.balancez.desc": "Sway",
+        "command.double_marche": "Double advance",
+        "command.double_marche.desc": "Two steps",
+        "command.fleche": "Flèche",
+        "command.fleche.desc": "Running attack",
 
         // Command options in settings
         "command.option.marche": "Advance (forward)",
@@ -253,6 +265,12 @@ const TRANSLATIONS = {
         "command.bond_avant.desc": "Saut avant",
         "command.bond_arriere": "Bond en arrière",
         "command.bond_arriere.desc": "Saut arrière",
+        "command.balancez": "Balancez",
+        "command.balancez.desc": "Balancer",
+        "command.double_marche": "Double marchez",
+        "command.double_marche.desc": "Deux pas",
+        "command.fleche": "Flèche",
+        "command.fleche.desc": "Attaque en courant",
 
         // Command options in settings
         "command.option.marche": "Marchez (avancer)",

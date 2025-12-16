@@ -83,6 +83,12 @@ COMMANDS: dict[str, Command] = {
         japanese="ボンナリエール",
         audio_file="bond_arriere.mp3",
     ),
+    "fleche": Command(
+        id="fleche",
+        french="Flèche",
+        japanese="フレッシュ",
+        audio_file="fleche.mp3",
+    ),
 }
 
 # Command sets for different skill levels
