@@ -553,6 +553,8 @@
                     eventSource.close();
                     eventSource = null;
                 }
+                // Fetch the initial state HTML from server to restore UI
+                htmx.ajax('POST', '/session/stop', {target: '#session-container', swap: 'innerHTML'});
             });
 
             eventSource.onerror = function() {
