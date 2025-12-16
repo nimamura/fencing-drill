@@ -275,3 +275,29 @@ class TestCommandTranslations:
             content = f.read()
 
         assert "走り突き" in content, "Fleche Japanese description should be '走り突き'"
+
+    def test_rest_translation_exists(self):
+        """command.rest should be defined in all languages for interval mode rest phase."""
+        i18n_path = os.path.join(
+            os.path.dirname(os.path.dirname(__file__)),
+            "static", "js", "i18n.js"
+        )
+        with open(i18n_path, "r", encoding="utf-8") as f:
+            content = f.read()
+
+        assert '"command.rest"' in content, "command.rest should be defined"
+        assert '"command.rest.desc"' in content, "command.rest.desc should be defined"
+
+    def test_rest_japanese_translation_is_correct(self):
+        """Rest Japanese translation should be 'ルポ' with description '休憩'."""
+        i18n_path = os.path.join(
+            os.path.dirname(os.path.dirname(__file__)),
+            "static", "js", "i18n.js"
+        )
+        with open(i18n_path, "r", encoding="utf-8") as f:
+            content = f.read()
+
+        assert "ルポ" in content, "Rest Japanese name should be 'ルポ'"
+        # Check for description in Japanese section (休憩 appears as command.rest.desc value)
+        assert '"command.rest.desc": "休憩"' in content or "'command.rest.desc': '休憩'" in content, \
+            "Rest Japanese description should be '休憩'"
