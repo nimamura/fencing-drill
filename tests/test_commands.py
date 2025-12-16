@@ -229,3 +229,39 @@ class TestCommandWeaponFields:
         cmd = COMMANDS["marche"]
         assert cmd.is_weapon_specific is False
         assert cmd.weapons is None
+
+
+class TestIsCommandValidForWeapon:
+    """Test is_command_valid_for_weapon function."""
+
+    def test_non_weapon_specific_valid_for_all(self):
+        """Non-weapon-specific commands are valid for all weapons."""
+        from logic.commands import is_command_valid_for_weapon
+
+        assert is_command_valid_for_weapon("marche", "foil") is True
+        assert is_command_valid_for_weapon("marche", "epee") is True
+        assert is_command_valid_for_weapon("marche", "sabre") is True
+
+    def test_fleche_valid_for_sabre(self):
+        """Fleche is valid for sabre."""
+        from logic.commands import is_command_valid_for_weapon
+
+        assert is_command_valid_for_weapon("fleche", "sabre") is True
+
+    def test_fleche_invalid_for_foil(self):
+        """Fleche is not valid for foil."""
+        from logic.commands import is_command_valid_for_weapon
+
+        assert is_command_valid_for_weapon("fleche", "foil") is False
+
+    def test_fleche_invalid_for_epee(self):
+        """Fleche is not valid for epee."""
+        from logic.commands import is_command_valid_for_weapon
+
+        assert is_command_valid_for_weapon("fleche", "epee") is False
+
+    def test_nonexistent_command_invalid(self):
+        """Nonexistent commands are invalid."""
+        from logic.commands import is_command_valid_for_weapon
+
+        assert is_command_valid_for_weapon("nonexistent", "foil") is False

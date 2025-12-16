@@ -69,7 +69,9 @@ class SessionStartRequest(BaseModel):
     @field_validator("weapon")
     @classmethod
     def validate_weapon(cls, v: str) -> str:
-        valid_weapons = ["foil", "epee", "sabre"]
+        from logic.weapons import WEAPON_PROFILES
+
+        valid_weapons = list(WEAPON_PROFILES.keys())
         if v not in valid_weapons:
             raise ValueError(f"Invalid weapon: {v}. Must be one of {valid_weapons}")
         return v
@@ -194,7 +196,7 @@ async def root(request: Request):
 @app.get("/settings/{mode}", response_class=HTMLResponse)
 async def get_settings(request: Request, mode: str):
     """Get settings panel HTML fragment for a training mode."""
-    valid_modes = ["basic", "combination", "random", "interval"]
+    valid_modes = [m.value for m in TrainingMode]
     if mode not in valid_modes:
         raise HTTPException(status_code=404, detail=f"Invalid mode: {mode}")
 
@@ -257,6 +259,16 @@ async def start_session(
 
     # Create config based on mode
     training_mode = TrainingMode(validated.mode)
+
+    # Validate weapon-command compatibility for Basic mode
+    if training_mode == TrainingMode.BASIC:
+        from logic.commands import is_command_valid_for_weapon
+
+        if not is_command_valid_for_weapon(validated.command_id, validated.weapon):
+            raise HTTPException(
+                status_code=422,
+                detail=f"Command '{validated.command_id}' is not valid for weapon '{validated.weapon}'"
+            )
 
     if training_mode == TrainingMode.BASIC:
         config = BasicConfig(
@@ -484,8 +496,10 @@ async def session_stream(session_id: str):
             get_post_command_delay,
             select_constrained_command,
         )
+        from logic.weapons import get_weapon_profile
 
         config = session.config
+        profile = get_weapon_profile(config.weapon)
 
         # Send initial en_garde
         en_garde = COMMANDS["en_garde"]
@@ -498,7 +512,8 @@ async def session_stream(session_id: str):
         if isinstance(config, BasicConfig):
             # Basic mode: repeat single command
             cmd = COMMANDS.get(config.command_id, COMMANDS["marche"])
-            interval = 60.0 / config.tempo_bpm
+            # Apply weapon tempo_multiplier: sabre faster, epee slower
+            interval = 60.0 / (config.tempo_bpm * profile.tempo_multiplier)
 
             for i in range(config.repetitions):
                 if session.status != SessionStatus.RUNNING:
@@ -520,7 +535,8 @@ async def session_stream(session_id: str):
         elif isinstance(config, CombinationConfig):
             # Combination mode: execute preset pattern
             command_ids = generate_combination(config)
-            interval = 60.0 / config.tempo_bpm
+            # Apply weapon tempo_multiplier: sabre faster, epee slower
+            interval = 60.0 / (config.tempo_bpm * profile.tempo_multiplier)
             total = len(command_ids)
 
             for i, cmd_id in enumerate(command_ids):
@@ -575,17 +591,18 @@ async def session_stream(session_id: str):
                     "data": json.dumps(cmd.to_dict()),
                 }
 
-                # Calculate interval with bond delay
+                # Calculate interval with bond delay and weapon tempo
                 base_interval = random.randint(
                     config.min_interval_ms, config.max_interval_ms
-                ) / 1000.0
+                ) / 1000.0 / profile.tempo_multiplier
                 interval = get_post_command_delay(cmd_id, base_interval)
                 await asyncio.sleep(interval)
 
         elif isinstance(config, IntervalConfig):
             # Interval mode: work/rest cycles
             command_ids = COMMAND_SETS["intermediate"]
-            work_interval = 60.0 / config.tempo_bpm
+            # Apply weapon tempo_multiplier: sabre faster, epee slower
+            work_interval = 60.0 / (config.tempo_bpm * profile.tempo_multiplier)
 
             for set_num in range(1, config.sets + 1):
                 if session.status != SessionStatus.RUNNING:

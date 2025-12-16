@@ -201,8 +201,13 @@ def select_constrained_command(
     if not safe_weighted:
         safe_weighted = weighted_commands
 
-    # Fallback: if still empty, use original command_set
+    # Fallback: if weighted_commands is empty (all commands filtered out)
+    # Apply weights to original command_set (preserves weapon filtering)
     if not safe_weighted:
+        fallback_weighted = apply_weapon_weights(command_set, profile.command_weights)
+        if fallback_weighted:
+            return select_weighted_command(fallback_weighted)
+        # Ultimate fallback - this shouldn't happen normally
         return random.choice(command_set)
 
     return select_weighted_command(safe_weighted)

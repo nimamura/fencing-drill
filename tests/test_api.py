@@ -264,3 +264,66 @@ class TestWeaponParameter:
         active_session = session_manager.get_active_session()
         if active_session:
             assert active_session.config.weapon == "foil"
+
+
+class TestWeaponCommandValidation:
+    """Test weapon-command compatibility validation."""
+
+    @pytest.mark.asyncio
+    async def test_fleche_rejected_for_foil(self):
+        """POST /session/start with fleche+foil should return 422."""
+        from main import app
+
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+            response = await client.post(
+                "/session/start",
+                data={
+                    "mode": "basic",
+                    "command_id": "fleche",
+                    "repetitions": "10",
+                    "tempo_bpm": "60",
+                    "weapon": "foil",
+                },
+            )
+
+        assert response.status_code == 422
+        assert "fleche" in response.text.lower()
+
+    @pytest.mark.asyncio
+    async def test_fleche_accepted_for_sabre(self):
+        """POST /session/start with fleche+sabre should succeed."""
+        from main import app
+
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+            response = await client.post(
+                "/session/start",
+                data={
+                    "mode": "basic",
+                    "command_id": "fleche",
+                    "repetitions": "10",
+                    "tempo_bpm": "60",
+                    "weapon": "sabre",
+                },
+            )
+
+        assert response.status_code == 200
+
+    @pytest.mark.asyncio
+    async def test_marche_accepted_for_all_weapons(self):
+        """POST /session/start with marche should work for all weapons."""
+        from main import app
+
+        for weapon in ["foil", "epee", "sabre"]:
+            async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+                response = await client.post(
+                    "/session/start",
+                    data={
+                        "mode": "basic",
+                        "command_id": "marche",
+                        "repetitions": "10",
+                        "tempo_bpm": "60",
+                        "weapon": weapon,
+                    },
+                )
+
+            assert response.status_code == 200, f"marche should be valid for {weapon}"

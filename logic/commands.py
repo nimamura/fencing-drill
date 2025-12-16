@@ -116,3 +116,25 @@ def get_command(command_id: str) -> Command:
         KeyError: If the command ID is not found.
     """
     return COMMANDS[command_id]
+
+
+def is_command_valid_for_weapon(command_id: str, weapon: str) -> bool:
+    """Check if a command is valid for a given weapon.
+
+    Args:
+        command_id: The command identifier.
+        weapon: The weapon type ('foil', 'epee', 'sabre').
+
+    Returns:
+        True if the command is valid for the weapon, False otherwise.
+    """
+    cmd = COMMANDS.get(command_id)
+    if cmd is None:
+        return False
+
+    if not cmd.is_weapon_specific:
+        # Non-weapon-specific commands are valid for all weapons
+        return True
+
+    # Weapon-specific commands are only valid for their allowed weapons
+    return cmd.weapons is not None and weapon in cmd.weapons
