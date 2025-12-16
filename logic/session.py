@@ -30,6 +30,7 @@ class BasicConfig:
     command_id: str = "marche"
     repetitions: int = 10
     tempo_bpm: int = 60
+    weapon: str = "foil"
 
 
 @dataclass
@@ -39,6 +40,7 @@ class CombinationConfig:
     pattern_id: str = "A"
     repetitions: int = 5
     tempo_bpm: int = 60
+    weapon: str = "foil"
 
 
 @dataclass
@@ -49,6 +51,7 @@ class RandomConfig:
     duration_seconds: int = 60
     min_interval_ms: int = 1000
     max_interval_ms: int = 3000
+    weapon: str = "foil"
 
 
 @dataclass
@@ -59,6 +62,7 @@ class IntervalConfig:
     rest_seconds: int = 15
     sets: int = 5
     tempo_bpm: int = 90
+    weapon: str = "foil"
 
 
 # Type alias for any config type

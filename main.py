@@ -45,6 +45,7 @@ class SessionStartRequest(BaseModel):
     """Validated request for starting a session."""
 
     mode: str
+    weapon: str = "foil"
     command_id: str = "marche"
     repetitions: int = 10
     tempo_bpm: int = 60
@@ -63,6 +64,14 @@ class SessionStartRequest(BaseModel):
         valid_modes = [m.value for m in TrainingMode]
         if v not in valid_modes:
             raise ValueError(f"Invalid mode: {v}. Must be one of {valid_modes}")
+        return v
+
+    @field_validator("weapon")
+    @classmethod
+    def validate_weapon(cls, v: str) -> str:
+        valid_weapons = ["foil", "epee", "sabre"]
+        if v not in valid_weapons:
+            raise ValueError(f"Invalid weapon: {v}. Must be one of {valid_weapons}")
         return v
 
     @field_validator("command_id")
@@ -198,6 +207,7 @@ async def get_settings(request: Request, mode: str):
 async def start_session(
     request: Request,
     mode: Annotated[str, Form()],
+    weapon: Annotated[str, Form()] = "foil",
     command_id: Annotated[str, Form()] = "marche",
     repetitions: Annotated[int, Form()] = 10,
     tempo_bpm: Annotated[int, Form()] = 60,
@@ -215,6 +225,7 @@ async def start_session(
     try:
         validated = SessionStartRequest(
             mode=mode,
+            weapon=weapon,
             command_id=command_id,
             repetitions=repetitions,
             tempo_bpm=tempo_bpm,
@@ -252,6 +263,7 @@ async def start_session(
             command_id=validated.command_id,
             repetitions=validated.repetitions,
             tempo_bpm=validated.tempo_bpm,
+            weapon=validated.weapon,
         )
     elif training_mode == TrainingMode.RANDOM:
         config = RandomConfig(
@@ -259,12 +271,14 @@ async def start_session(
             duration_seconds=validated.duration_seconds,
             min_interval_ms=validated.min_interval_ms,
             max_interval_ms=validated.max_interval_ms,
+            weapon=validated.weapon,
         )
     elif training_mode == TrainingMode.COMBINATION:
         config = CombinationConfig(
             pattern_id=validated.pattern_id,
             repetitions=validated.repetitions,
             tempo_bpm=validated.tempo_bpm,
+            weapon=validated.weapon,
         )
     elif training_mode == TrainingMode.INTERVAL:
         config = IntervalConfig(
@@ -272,6 +286,7 @@ async def start_session(
             rest_seconds=validated.rest_seconds,
             sets=validated.sets,
             tempo_bpm=validated.tempo_bpm,
+            weapon=validated.weapon,
         )
     else:
         config = BasicConfig()
@@ -538,8 +553,8 @@ async def session_stream(session_id: str):
                 asyncio.get_event_loop().time() < end_time
                 and session.status == SessionStatus.RUNNING
             ):
-                # Select command with constraints
-                cmd_id = select_constrained_command(command_ids, history, last_cmd)
+                # Select command with constraints and weapon filtering
+                cmd_id = select_constrained_command(command_ids, history, last_cmd, config.weapon)
                 cmd = COMMANDS[cmd_id]
 
                 # Update history
@@ -586,7 +601,8 @@ async def session_stream(session_id: str):
                     asyncio.get_event_loop().time() < work_end
                     and session.status == SessionStatus.RUNNING
                 ):
-                    cmd_id = select_constrained_command(command_ids, history, last_cmd)
+                    # Select command with weapon filtering
+                    cmd_id = select_constrained_command(command_ids, history, last_cmd, config.weapon)
                     cmd = COMMANDS[cmd_id]
 
                     history.append(cmd_id)

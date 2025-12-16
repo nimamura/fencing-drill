@@ -10,6 +10,8 @@ class Command:
     french: str
     japanese: str
     audio_file: str
+    is_weapon_specific: bool = False
+    weapons: list[str] | None = None
 
     def to_dict(self) -> dict:
         """Convert to dict format for SSE events."""
@@ -88,6 +90,8 @@ COMMANDS: dict[str, Command] = {
         french="Flèche",
         japanese="フレッシュ",
         audio_file="fleche.mp3",
+        is_weapon_specific=True,
+        weapons=["sabre"],
     ),
 }
 

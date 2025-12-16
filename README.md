@@ -5,6 +5,7 @@ Fencing footwork training app that calls out French commands with configurable t
 ## Features
 
 - 4 training modes (Basic, Combination, Random, Interval)
+- 3 weapon types with auto-adjusted tempo (Foil, Épée, Sabre)
 - Authentic French fencing commands with audio
 - Real-time command delivery via SSE
 - PWA support for offline use in the gym
@@ -33,6 +34,14 @@ Fencing footwork training app that calls out French commands with configurable t
 | Balancez | Sway forward/back |
 | Bond en avant | Jump forward |
 | Bond en arrière | Jump backward |
+
+## Weapons
+
+| Weapon | Tempo | Notes |
+|--------|-------|-------|
+| **Foil** | Standard | Default weapon |
+| **Épée** | Slower (0.8x) | More balancez emphasis |
+| **Sabre** | Faster (1.3x) | Includes flèche, excludes balancez |
 
 ## Tech Stack
 

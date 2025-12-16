@@ -161,36 +161,51 @@ def select_constrained_command(
     command_set: list[str],
     history: list[str],
     last_command: Optional[str],
+    weapon: str = "foil",
 ) -> str:
-    """Select a command respecting all constraints.
+    """Select a command respecting all constraints and weapon filtering.
 
     Constraints:
-    1. Must be from command_set
+    1. Must be from command_set (filtered by weapon)
     2. After fendez, must return remise
     3. Avoid wall risk (5+ consecutive same direction)
+    4. Respect weapon-specific command weights
 
     Args:
         command_set: Available commands to select from.
         history: Previous commands for constraint checking.
         last_command: The immediately previous command (for fendez rule).
+        weapon: Weapon type for filtering ('foil', 'epee', 'sabre').
 
     Returns:
         Selected command ID.
     """
+    from logic.weapons import get_weapon_profile
+
     # Rule 1: Fendez must be followed by remise
     if last_command and should_force_remise(last_command):
         return "remise"
 
-    # Filter commands to avoid wall risk
-    valid_commands = [
-        cmd for cmd in command_set if not is_wall_risk(history, cmd)
+    # Apply weapon filtering
+    profile = get_weapon_profile(weapon)
+    filtered_commands = filter_commands_for_weapon(command_set, weapon, profile)
+    weighted_commands = apply_weapon_weights(filtered_commands, profile.command_weights)
+
+    # Filter out wall risk commands
+    safe_weighted = [
+        (cmd, weight) for cmd, weight in weighted_commands
+        if not is_wall_risk(history, cmd)
     ]
 
-    # Fallback: if all commands would cause wall risk, allow any
-    if not valid_commands:
-        valid_commands = command_set
+    # Fallback: if all commands would cause wall risk, use all weighted commands
+    if not safe_weighted:
+        safe_weighted = weighted_commands
 
-    return random.choice(valid_commands)
+    # Fallback: if still empty, use original command_set
+    if not safe_weighted:
+        return random.choice(command_set)
+
+    return select_weighted_command(safe_weighted)
 
 
 def get_post_command_delay(command_id: str, base_delay: float) -> float:
@@ -206,3 +221,85 @@ def get_post_command_delay(command_id: str, base_delay: float) -> float:
     if is_bond_command(command_id):
         return base_delay * 1.5
     return base_delay
+
+
+def filter_commands_for_weapon(
+    command_ids: list[str],
+    weapon: str,
+    profile: "WeaponProfile",
+) -> list[str]:
+    """Filter commands based on weapon restrictions and add weapon-specific commands.
+
+    Args:
+        command_ids: List of command IDs to filter.
+        weapon: The weapon type string ('foil', 'epee', or 'sabre').
+        profile: The weapon profile with additional_commands.
+
+    Returns:
+        Filtered list of command IDs.
+    """
+    from logic.commands import COMMANDS
+
+    result = []
+
+    for cmd_id in command_ids:
+        cmd = COMMANDS.get(cmd_id)
+        if cmd is None:
+            continue
+
+        if cmd.is_weapon_specific:
+            # Only include if this weapon is allowed
+            if cmd.weapons and weapon in cmd.weapons:
+                result.append(cmd_id)
+        else:
+            # Non-weapon-specific commands are always included
+            result.append(cmd_id)
+
+    # Add weapon-specific additional commands
+    for cmd_id in profile.additional_commands:
+        if cmd_id not in result:
+            result.append(cmd_id)
+
+    return result
+
+
+def apply_weapon_weights(
+    command_ids: list[str],
+    weights: dict[str, float],
+) -> list[tuple[str, float]]:
+    """Apply weapon-specific weights to commands.
+
+    Args:
+        command_ids: List of command IDs.
+        weights: Dict mapping command_id to weight (default 1.0, 0.0 = excluded).
+
+    Returns:
+        List of (command_id, weight) tuples, excluding zero-weight commands.
+    """
+    result = []
+
+    for cmd_id in command_ids:
+        weight = weights.get(cmd_id, 1.0)
+        if weight > 0:
+            result.append((cmd_id, weight))
+
+    return result
+
+
+def select_weighted_command(weighted_commands: list[tuple[str, float]]) -> str:
+    """Select a command using weighted random choice.
+
+    Args:
+        weighted_commands: List of (command_id, weight) tuples.
+
+    Returns:
+        Selected command ID.
+
+    Raises:
+        ValueError: If weighted_commands is empty.
+    """
+    if not weighted_commands:
+        raise ValueError("No commands available for selection")
+
+    commands, weights = zip(*weighted_commands)
+    return random.choices(commands, weights=weights, k=1)[0]

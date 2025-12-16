@@ -206,6 +206,35 @@
             <!-- 左カラム: モード選択 & 設定 -->
             <div class="lg:col-span-1 space-y-4 sm:space-y-6">
 
+                <!-- 種目選択 -->
+                <section>
+                    <h2 class="text-xs font-medium text-fencing-steel/50 uppercase tracking-widest mb-3" data-i18n="section.weapon">Weapon</h2>
+                    <div class="grid grid-cols-3 gap-2" id="weapon-selector">
+                        <button type="button"
+                                class="weapon-card active flex flex-col items-center justify-center p-3 rounded-lg border-2 border-fencing-gold bg-fencing-gold/10 transition-all touch-target"
+                                data-weapon="foil"
+                                onclick="selectWeapon(this, 'foil')">
+                            <span class="text-xl sm:text-2xl mb-1">🤺</span>
+                            <span class="text-xs sm:text-sm font-medium text-fencing-silver" data-i18n="weapon.foil">フルーレ</span>
+                        </button>
+                        <button type="button"
+                                class="weapon-card flex flex-col items-center justify-center p-3 rounded-lg border-2 border-fencing-surface-light hover:border-fencing-steel/50 transition-all touch-target"
+                                data-weapon="epee"
+                                onclick="selectWeapon(this, 'epee')">
+                            <span class="text-xl sm:text-2xl mb-1">⚔️</span>
+                            <span class="text-xs sm:text-sm font-medium text-fencing-silver" data-i18n="weapon.epee">エペ</span>
+                        </button>
+                        <button type="button"
+                                class="weapon-card flex flex-col items-center justify-center p-3 rounded-lg border-2 border-fencing-surface-light hover:border-fencing-steel/50 transition-all touch-target"
+                                data-weapon="sabre"
+                                onclick="selectWeapon(this, 'sabre')">
+                            <span class="text-xl sm:text-2xl mb-1">🗡️</span>
+                            <span class="text-xs sm:text-sm font-medium text-fencing-silver" data-i18n="weapon.sabre">サーブル</span>
+                        </button>
+                    </div>
+                    <p class="text-[10px] sm:text-xs text-fencing-steel/40 mt-2" data-i18n="weapon.hint">種目によってテンポとコマンドが自動調整されます</p>
+                </section>
+
                 <!-- モード選択 -->
                 <section>
                     <h2 class="text-xs font-medium text-fencing-steel/50 uppercase tracking-widest mb-3 sm:mb-4">Training Mode</h2>
@@ -292,6 +321,7 @@
                     <h2 class="text-xs font-medium text-fencing-steel/50 uppercase tracking-widest mb-3 sm:mb-4">Settings</h2>
                     <form id="settings-form" hx-post="/session/start" hx-target="#session-container" hx-swap="innerHTML">
                         <input type="hidden" name="mode" id="selected-mode" value="basic">
+                        <input type="hidden" name="weapon" id="selected-weapon" value="foil">
                         <div id="settings-panel" class="space-y-5">
                             {% include "components/settings_basic.html" %}
                         </div>
@@ -472,6 +502,23 @@
 
             // モードラベル更新
             document.getElementById('current-mode-label').textContent = modeLabels[mode];
+        }
+
+        // 種目選択
+        let currentWeapon = 'foil';
+
+        function selectWeapon(button, weapon) {
+            currentWeapon = weapon;
+            document.getElementById('selected-weapon').value = weapon;
+
+            document.querySelectorAll('.weapon-card').forEach(card => {
+                card.classList.remove('active');
+                card.classList.remove('border-fencing-gold', 'bg-fencing-gold/10');
+                card.classList.add('border-fencing-surface-light');
+            });
+            button.classList.add('active');
+            button.classList.remove('border-fencing-surface-light');
+            button.classList.add('border-fencing-gold', 'bg-fencing-gold/10');
         }
 
         // SSE接続管理

@@ -161,3 +161,71 @@ class TestGetCommand:
 
         with pytest.raises(KeyError):
             get_command("invalid_command")
+
+
+class TestCommandWeaponFields:
+    """Test weapon-specific fields on Command."""
+
+    def test_command_default_not_weapon_specific(self):
+        """Commands should default to is_weapon_specific=False."""
+        from logic.commands import Command
+
+        cmd = Command(
+            id="test",
+            french="Test",
+            japanese="テスト",
+            audio_file="test.mp3",
+        )
+
+        assert cmd.is_weapon_specific is False
+
+    def test_command_default_weapons_none(self):
+        """Commands should default to weapons=None (all weapons)."""
+        from logic.commands import Command
+
+        cmd = Command(
+            id="test",
+            french="Test",
+            japanese="テスト",
+            audio_file="test.mp3",
+        )
+
+        assert cmd.weapons is None
+
+    def test_command_weapon_specific_explicit(self):
+        """Commands can be explicitly set as weapon-specific."""
+        from logic.commands import Command
+
+        cmd = Command(
+            id="fleche",
+            french="Flèche",
+            japanese="フレッシュ",
+            audio_file="fleche.mp3",
+            is_weapon_specific=True,
+            weapons=["sabre"],
+        )
+
+        assert cmd.is_weapon_specific is True
+        assert cmd.weapons == ["sabre"]
+
+    def test_fleche_is_weapon_specific(self):
+        """Fleche command should have is_weapon_specific=True."""
+        from logic.commands import COMMANDS
+
+        cmd = COMMANDS["fleche"]
+        assert cmd.is_weapon_specific is True
+
+    def test_fleche_weapons_sabre_only(self):
+        """Fleche command should have weapons=['sabre']."""
+        from logic.commands import COMMANDS
+
+        cmd = COMMANDS["fleche"]
+        assert cmd.weapons == ["sabre"]
+
+    def test_marche_not_weapon_specific(self):
+        """Marche should work for all weapons (is_weapon_specific=False)."""
+        from logic.commands import COMMANDS
+
+        cmd = COMMANDS["marche"]
+        assert cmd.is_weapon_specific is False
+        assert cmd.weapons is None

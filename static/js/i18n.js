@@ -21,7 +21,14 @@ const TRANSLATIONS = {
         "section.training_mode": "Training Mode",
         "section.settings": "Settings",
         "section.command_ref": "Command Reference",
+        "section.weapon": "種目",
         "status.current_mode": "Current Mode:",
+
+        // Weapon selection
+        "weapon.foil": "フルーレ",
+        "weapon.epee": "エペ",
+        "weapon.sabre": "サーブル",
+        "weapon.hint": "種目によってテンポとコマンドが自動調整されます",
 
         // Buttons
         "button.start": "開始",
@@ -115,7 +122,14 @@ const TRANSLATIONS = {
         "section.training_mode": "Training Mode",
         "section.settings": "Settings",
         "section.command_ref": "Command Reference",
+        "section.weapon": "Weapon",
         "status.current_mode": "Current Mode:",
+
+        // Weapon selection
+        "weapon.foil": "Foil",
+        "weapon.epee": "Épée",
+        "weapon.sabre": "Sabre",
+        "weapon.hint": "Tempo and commands adjust automatically by weapon",
 
         // Buttons
         "button.start": "Start",
@@ -209,7 +223,14 @@ const TRANSLATIONS = {
         "section.training_mode": "Mode d'entraînement",
         "section.settings": "Paramètres",
         "section.command_ref": "Référence des commandes",
+        "section.weapon": "Arme",
         "status.current_mode": "Mode actuel :",
+
+        // Weapon selection
+        "weapon.foil": "Fleuret",
+        "weapon.epee": "Épée",
+        "weapon.sabre": "Sabre",
+        "weapon.hint": "Le tempo et les commandes s'ajustent selon l'arme",
 
         // Buttons
         "button.start": "Démarrer",

@@ -241,6 +241,78 @@ class TestRandomConstraints:
             assert cmd in command_set
 
 
+class TestSelectConstrainedCommandWithWeapon:
+    """Test select_constrained_command with weapon parameter."""
+
+    def test_sabre_excludes_balancez(self):
+        """Sabre should never select balancez (weight=0.0)."""
+        from logic.generator import select_constrained_command
+        import random
+
+        random.seed(42)
+
+        # Command set includes balancez
+        command_set = ["marche", "rompe", "balancez"]
+        history = []
+
+        # Run 50 iterations - balancez should never be selected for sabre
+        for _ in range(50):
+            cmd = select_constrained_command(command_set, history, None, weapon="sabre")
+            assert cmd != "balancez", "Sabre should not select balancez"
+
+    def test_sabre_can_select_fleche(self):
+        """Sabre should be able to select fleche (added via additional_commands)."""
+        from logic.generator import select_constrained_command
+        import random
+
+        random.seed(42)
+
+        # Command set includes fleche
+        command_set = ["marche", "rompe", "fleche"]
+        history = []
+
+        # Run iterations until fleche is selected (should be possible)
+        selected_fleche = False
+        for _ in range(100):
+            cmd = select_constrained_command(command_set, history, None, weapon="sabre")
+            if cmd == "fleche":
+                selected_fleche = True
+                break
+
+        assert selected_fleche, "Sabre should be able to select fleche"
+
+    def test_foil_excludes_fleche(self):
+        """Foil should never select fleche (weapon-specific to sabre)."""
+        from logic.generator import select_constrained_command
+        import random
+
+        random.seed(42)
+
+        # Command set includes fleche
+        command_set = ["marche", "rompe", "fleche"]
+        history = []
+
+        # Run 50 iterations - fleche should never be selected for foil
+        for _ in range(50):
+            cmd = select_constrained_command(command_set, history, None, weapon="foil")
+            assert cmd != "fleche", "Foil should not select fleche"
+
+    def test_default_weapon_is_foil(self):
+        """Without weapon parameter, should behave as foil (backward compatible)."""
+        from logic.generator import select_constrained_command
+        import random
+
+        random.seed(42)
+
+        command_set = ["marche", "rompe", "fleche"]
+        history = []
+
+        # Without weapon param, fleche should be excluded (foil behavior)
+        for _ in range(50):
+            cmd = select_constrained_command(command_set, history, None)
+            assert cmd != "fleche", "Default (foil) should not select fleche"
+
+
 class TestIntervalDelay:
     """Test delay calculations for interval mode."""
 
@@ -261,3 +333,125 @@ class TestIntervalDelay:
         expected = 1.5  # 1.5x for bond commands
         assert get_post_command_delay("bond_avant", base_delay) == expected
         assert get_post_command_delay("bond_arriere", base_delay) == expected
+
+
+class TestWeaponCommandFiltering:
+    """Test weapon-based command filtering."""
+
+    def test_filter_commands_for_weapon_foil_excludes_fleche(self):
+        """Foil should exclude fleche (weapon-specific command)."""
+        from logic.generator import filter_commands_for_weapon
+        from logic.weapons import get_weapon_profile
+
+        command_ids = ["marche", "rompe", "fleche"]
+        profile = get_weapon_profile("foil")
+        result = filter_commands_for_weapon(command_ids, "foil", profile)
+
+        assert "marche" in result
+        assert "rompe" in result
+        assert "fleche" not in result
+
+    def test_filter_commands_for_weapon_sabre_includes_fleche(self):
+        """Sabre should include fleche."""
+        from logic.generator import filter_commands_for_weapon
+        from logic.weapons import get_weapon_profile
+
+        command_ids = ["marche", "rompe", "fleche"]
+        profile = get_weapon_profile("sabre")
+        result = filter_commands_for_weapon(command_ids, "sabre", profile)
+
+        assert "marche" in result
+        assert "rompe" in result
+        assert "fleche" in result
+
+    def test_filter_commands_adds_additional_commands(self):
+        """Sabre should include fleche via additional_commands."""
+        from logic.generator import filter_commands_for_weapon
+        from logic.weapons import get_weapon_profile
+
+        command_ids = ["marche", "rompe"]  # fleche not in list
+        profile = get_weapon_profile("sabre")
+        result = filter_commands_for_weapon(command_ids, "sabre", profile)
+
+        assert "fleche" in result  # added from additional_commands
+
+
+class TestWeaponWeights:
+    """Test weapon-specific command weights."""
+
+    def test_apply_weapon_weights_excludes_zero_weight(self):
+        """Commands with weight 0.0 should be excluded."""
+        from logic.generator import apply_weapon_weights
+
+        command_ids = ["marche", "balancez"]
+        weights = {"balancez": 0.0}  # sabre excludes balancez
+        result = apply_weapon_weights(command_ids, weights)
+
+        result_ids = [cmd_id for cmd_id, _ in result]
+        assert "marche" in result_ids
+        assert "balancez" not in result_ids
+
+    def test_apply_weapon_weights_default_weight(self):
+        """Commands without specific weight should default to 1.0."""
+        from logic.generator import apply_weapon_weights
+
+        command_ids = ["marche", "rompe"]
+        weights = {}  # no specific weights
+        result = apply_weapon_weights(command_ids, weights)
+
+        assert result == [("marche", 1.0), ("rompe", 1.0)]
+
+    def test_apply_weapon_weights_custom_weight(self):
+        """Commands should use custom weight if specified."""
+        from logic.generator import apply_weapon_weights
+
+        command_ids = ["marche", "balancez"]
+        weights = {"balancez": 0.3}  # foil reduces balancez
+        result = apply_weapon_weights(command_ids, weights)
+
+        assert ("marche", 1.0) in result
+        assert ("balancez", 0.3) in result
+
+
+class TestWeightedSelection:
+    """Test weighted random command selection."""
+
+    def test_select_weighted_command_returns_valid_command(self):
+        """select_weighted_command should return one of the available commands."""
+        from logic.generator import select_weighted_command
+
+        weighted_commands = [("marche", 1.0), ("rompe", 1.0)]
+        result = select_weighted_command(weighted_commands)
+
+        assert result in ["marche", "rompe"]
+
+    def test_select_weighted_command_respects_weights(self):
+        """select_weighted_command should respect weights in selection."""
+        import random
+        from logic.generator import select_weighted_command
+
+        random.seed(42)
+
+        # Run many iterations with extreme weight difference
+        weighted_commands = [("heavy", 100.0), ("light", 1.0)]
+        results = [select_weighted_command(weighted_commands) for _ in range(100)]
+
+        # Heavy should be selected much more often
+        heavy_count = results.count("heavy")
+        assert heavy_count > 80, f"Expected heavy to be selected >80 times, got {heavy_count}"
+
+    def test_select_weighted_command_empty_raises_error(self):
+        """select_weighted_command should raise ValueError for empty list."""
+        from logic.generator import select_weighted_command
+
+        with pytest.raises(ValueError):
+            select_weighted_command([])
+
+    def test_select_weighted_command_single_command(self):
+        """select_weighted_command should work with single command."""
+        from logic.generator import select_weighted_command
+
+        weighted_commands = [("only_one", 1.0)]
+        result = select_weighted_command(weighted_commands)
+
+        assert result == "only_one"

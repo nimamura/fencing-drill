@@ -289,6 +289,23 @@ fencing-drill/
 - [x] OGP image (`static/images/og-image.png`, 1200×630px)
 - [x] Tests (13 tests in `tests/test_ogp.py`)
 
+### Phase 8: Weapon Selection ✅ DONE
+- [x] WeaponProfile定義 (`logic/weapons.py`) - 種目別テンポ倍率・コマンド重み
+- [x] Command武器固有フィールド (`is_weapon_specific`, `weapons`)
+- [x] Generator重み付き選択 (`filter_commands_for_weapon`, `select_weighted_command`)
+- [x] 全Configにweaponフィールド追加（デフォルト: foil）
+- [x] APIバリデーション・テンポ自動調整
+- [x] UI種目選択ボタン（フルーレ/エペ/サーブル）
+- [x] i18n翻訳（ja/en/fr）
+- [x] Tests (219 tests passing)
+
+**種目別設定**:
+| 種目 | tempo_multiplier | 特徴 |
+|------|------------------|------|
+| フルーレ | 1.0 | 標準 |
+| エペ | 0.8 | ゆっくり、balancez重視 |
+| サーブル | 1.3 | 速い、fleche追加、balancez除外 |
+
 ---
 
 ## UI Design
@@ -334,8 +351,9 @@ fencing-drill/
 - [x] **Phase 5: Polish** (mobile responsiveness, error handling, session recovery, PWA)
 - [x] **Phase 6: Multi-language Support** (ja/en/fr, data-i18n attributes, language selector)
 - [x] **Phase 7: OGP/Meta Tags** (OGP, Twitter Card, og-image.png)
-- [x] Tests: 164 tests passing (TDD)
+- [x] **Phase 8: Weapon Selection** (フルーレ/エペ/サーブル、テンポ自動調整)
+- [x] Tests: 219 tests passing (TDD)
 
 ## Next Steps
 
-1. **Phase 8: Additional Features** — カスタムパターン作成、グループ練習対応など
+1. **Phase 9: Additional Features** — カスタムパターン作成、グループ練習対応など

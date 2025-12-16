@@ -162,3 +162,105 @@ class TestSSEEndpoint:
 
         # Cleanup
         session_manager.remove_session(session.id)
+
+
+class TestWeaponParameter:
+    """Test weapon parameter in session start."""
+
+    @pytest.mark.asyncio
+    async def test_start_session_with_weapon_foil(self):
+        """POST /session/start with weapon=foil should succeed."""
+        from main import app
+
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+            response = await client.post(
+                "/session/start",
+                data={
+                    "mode": "basic",
+                    "command_id": "marche",
+                    "repetitions": "10",
+                    "tempo_bpm": "60",
+                    "weapon": "foil",
+                },
+            )
+
+        assert response.status_code == 200
+
+    @pytest.mark.asyncio
+    async def test_start_session_with_weapon_epee(self):
+        """POST /session/start with weapon=epee should succeed."""
+        from main import app
+
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+            response = await client.post(
+                "/session/start",
+                data={
+                    "mode": "basic",
+                    "command_id": "marche",
+                    "repetitions": "10",
+                    "tempo_bpm": "60",
+                    "weapon": "epee",
+                },
+            )
+
+        assert response.status_code == 200
+
+    @pytest.mark.asyncio
+    async def test_start_session_with_weapon_sabre(self):
+        """POST /session/start with weapon=sabre should succeed."""
+        from main import app
+
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+            response = await client.post(
+                "/session/start",
+                data={
+                    "mode": "basic",
+                    "command_id": "marche",
+                    "repetitions": "10",
+                    "tempo_bpm": "60",
+                    "weapon": "sabre",
+                },
+            )
+
+        assert response.status_code == 200
+
+    @pytest.mark.asyncio
+    async def test_start_session_with_invalid_weapon(self):
+        """POST /session/start with invalid weapon should return 422."""
+        from main import app
+
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+            response = await client.post(
+                "/session/start",
+                data={
+                    "mode": "basic",
+                    "command_id": "marche",
+                    "repetitions": "10",
+                    "tempo_bpm": "60",
+                    "weapon": "katana",
+                },
+            )
+
+        assert response.status_code == 422
+
+    @pytest.mark.asyncio
+    async def test_start_session_default_weapon_is_foil(self):
+        """POST /session/start without weapon should default to foil."""
+        from main import app, session_manager
+
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+            response = await client.post(
+                "/session/start",
+                data={
+                    "mode": "basic",
+                    "command_id": "marche",
+                    "repetitions": "10",
+                    "tempo_bpm": "60",
+                },
+            )
+
+        assert response.status_code == 200
+        # Session should have been created with default weapon=foil
+        active_session = session_manager.get_active_session()
+        if active_session:
+            assert active_session.config.weapon == "foil"

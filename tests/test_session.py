@@ -200,3 +200,63 @@ class TestSessionManager:
 
         active = manager.get_active_session()
         assert active is None
+
+
+class TestConfigWeaponField:
+    """Test weapon field on all config types."""
+
+    def test_basic_config_default_weapon_foil(self):
+        """BasicConfig should default to weapon='foil'."""
+        from logic.session import BasicConfig
+
+        config = BasicConfig()
+        assert config.weapon == "foil"
+
+    def test_basic_config_custom_weapon(self):
+        """BasicConfig should accept custom weapon."""
+        from logic.session import BasicConfig
+
+        config = BasicConfig(weapon="sabre")
+        assert config.weapon == "sabre"
+
+    def test_combination_config_default_weapon_foil(self):
+        """CombinationConfig should default to weapon='foil'."""
+        from logic.session import CombinationConfig
+
+        config = CombinationConfig()
+        assert config.weapon == "foil"
+
+    def test_combination_config_custom_weapon(self):
+        """CombinationConfig should accept custom weapon."""
+        from logic.session import CombinationConfig
+
+        config = CombinationConfig(weapon="epee")
+        assert config.weapon == "epee"
+
+    def test_random_config_default_weapon_foil(self):
+        """RandomConfig should default to weapon='foil'."""
+        from logic.session import RandomConfig
+
+        config = RandomConfig()
+        assert config.weapon == "foil"
+
+    def test_random_config_custom_weapon(self):
+        """RandomConfig should accept custom weapon."""
+        from logic.session import RandomConfig
+
+        config = RandomConfig(weapon="sabre")
+        assert config.weapon == "sabre"
+
+    def test_interval_config_default_weapon_foil(self):
+        """IntervalConfig should default to weapon='foil'."""
+        from logic.session import IntervalConfig
+
+        config = IntervalConfig()
+        assert config.weapon == "foil"
+
+    def test_interval_config_custom_weapon(self):
+        """IntervalConfig should accept custom weapon."""
+        from logic.session import IntervalConfig
+
+        config = IntervalConfig(weapon="epee")
+        assert config.weapon == "epee"
