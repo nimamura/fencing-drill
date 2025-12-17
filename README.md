@@ -1,6 +1,28 @@
 # Fencing Drill
 
-Fencing footwork training app that calls out French commands with configurable timing and modes. Practice solo like you have a coach.
+[![Tests](https://img.shields.io/badge/tests-233%20passing-brightgreen)](https://github.com/nimamura/fencing-drill)
+[![Python](https://img.shields.io/badge/python-3.11+-blue)](https://python.org)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
+A solo footwork training app that calls out French fencing commands with audio. Practice like you have a coach.
+
+![Fencing Drill Preview](static/images/og-image.png)
+
+## Live Demo
+
+**Try it now:** [https://fencing-drill-production.up.railway.app/](https://fencing-drill-production.up.railway.app/)
+
+Works on desktop and mobile. Install as a PWA for offline use in the gym.
+
+## Why This App?
+
+Every fencer knows the struggle: you want to practice footwork, but you don't have a coach or training partner available. You could count reps in your head, but that's not the same as reacting to commands.
+
+This app solves that problem by:
+- Calling out authentic French commands ("Marchez!", "Rompez!", "Fendez!")
+- Randomizing commands to train your reaction time
+- Adjusting tempo and intensity to match your training goals
+- Working offline so you can use it anywhere — gym, home, or piste
 
 ## Features
 
@@ -23,25 +45,28 @@ Fencing footwork training app that calls out French commands with configurable t
 
 ## Commands
 
-| French | Description |
-|--------|-------------|
-| En garde | Guard position |
-| Marchez | Advance |
-| Rompez | Retreat |
-| Fendez | Lunge |
-| Allongez le bras | Extend arm |
-| Remise en garde | Return to guard |
-| Balancez | Sway forward/back |
-| Bond en avant | Jump forward |
-| Bond en arrière | Jump backward |
+| French | Phonetic | Description |
+|--------|----------|-------------|
+| En garde | ahn GARD | Guard position |
+| Marchez | mar-SHAY | Advance |
+| Rompez | rom-PAY | Retreat |
+| Fendez | fahn-DAY | Lunge |
+| Allongez le bras | ah-lon-ZHAY luh BRAH | Extend arm |
+| Remise en garde | ruh-MEEZ ahn GARD | Return to guard |
+| Balancez | bah-lahn-SAY | Sway forward/back |
+| Bond en avant | bohn ahn ah-VAHN | Jump forward |
+| Bond en arrière | bohn ahn ah-ree-AIR | Jump backward |
+| Flèche | FLESH | Running attack (Sabre only) |
 
 ## Weapons
 
+Each weapon type has different tempo characteristics:
+
 | Weapon | Tempo | Notes |
 |--------|-------|-------|
-| **Foil** | Standard | Default weapon |
-| **Épée** | Slower (0.8x) | More balancez emphasis |
-| **Sabre** | Faster (1.3x) | Includes flèche, excludes balancez |
+| **Foil** | Standard (1.0x) | Default weapon, balanced training |
+| **Épée** | Slower (0.8x) | More deliberate, emphasis on balancez |
+| **Sabre** | Faster (1.3x) | Explosive movements, includes flèche |
 
 ## Tech Stack
 
@@ -60,8 +85,12 @@ Fencing footwork training app that calls out French commands with configurable t
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/fencing-drill.git
+git clone https://github.com/nimamura/fencing-drill.git
 cd fencing-drill
+
+# Create virtual environment (recommended)
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 # Install dependencies
 pip install -r requirements.txt
@@ -91,15 +120,46 @@ fencing-drill/
 ├── logic/
 │   ├── commands.py      # Command definitions
 │   ├── generator.py     # Command generation per mode
+│   ├── weapons.py       # Weapon profiles and tempo
 │   └── session.py       # Session state management
 ├── templates/           # Jinja2 + htmx templates
 ├── static/
 │   ├── audio/           # Command audio files (MP3)
 │   ├── css/             # Stylesheets
 │   └── js/              # JavaScript (audio, i18n)
-└── tests/               # pytest test files
+└── tests/               # pytest test files (233 unit + 2 e2e)
 ```
+
+## Contributing
+
+Contributions are welcome! Here's how you can help:
+
+1. **Report bugs** — Open an issue describing the problem
+2. **Suggest features** — Training modes, commands, or UI improvements
+3. **Submit PRs** — Bug fixes, new features, or documentation improvements
+4. **Audio recordings** — Native French speakers welcome to contribute professional audio
+
+### Development
+
+```bash
+# Run tests
+pytest
+
+# Run with auto-reload
+uvicorn main:app --reload
+```
+
+## Roadmap
+
+- [ ] Custom pattern creator
+- [ ] Group/class training mode
+- [ ] Training history and statistics
+- [ ] Professional audio recordings
 
 ## License
 
 MIT
+
+---
+
+Built with ⚔️ by a fencer, for fencers. *En garde!*
