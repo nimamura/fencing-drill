@@ -152,8 +152,6 @@ uvicorn main:app --reload
 ## Roadmap
 
 - [ ] Custom pattern creator
-- [ ] Group/class training mode
-- [ ] Training history and statistics
 - [ ] Professional audio recordings
 
 ## License
