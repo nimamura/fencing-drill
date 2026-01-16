@@ -408,3 +408,82 @@ class PositionTracker:
         elif self.position < -POSITION_SOFT_LIMIT:
             return "forward"
         return "neutral"
+
+
+def generate_random_commands(
+    command_set: str,
+    count: int,
+    weapon: str = "foil",
+) -> list[str]:
+    """Generate position-balanced random commands using phrases.
+
+    Uses the phrase system to generate natural movement sequences
+    while respecting position limits and weapon restrictions.
+
+    Args:
+        command_set: Difficulty level ("beginner", "intermediate", "advanced").
+        count: Number of commands to generate.
+        weapon: Weapon type for filtering.
+
+    Returns:
+        List of command IDs.
+    """
+    from logic.phrases import get_phrases_for_difficulty, select_balanced_phrase
+    from logic.commands import COMMAND_SETS
+
+    # Get available phrases for difficulty
+    phrases = get_phrases_for_difficulty(command_set)
+
+    # Track position
+    tracker = PositionTracker()
+
+    # Collect commands
+    commands: list[str] = []
+    last_cmd: Optional[str] = None
+
+    # Get actual command set for constraint checking
+    actual_command_set = COMMAND_SETS.get(command_set, COMMAND_SETS["beginner"])
+
+    while len(commands) < count:
+        # Select a phrase based on current position
+        phrase = select_balanced_phrase(tracker.position, phrases)
+
+        # Generate commands from phrase, respecting constraints
+        for cmd in phrase.commands:
+            if len(commands) >= count:
+                break
+
+            # Apply fendez->remise rule
+            if last_cmd and should_force_remise(last_cmd):
+                cmd = "remise"
+
+            # Apply command transition rules (except when fendez->remise forced)
+            elif last_cmd and last_cmd != "fendez":
+                preferred = get_preferred_next_command(last_cmd, actual_command_set)
+                if preferred and preferred in actual_command_set:
+                    cmd = preferred
+
+            # Skip commands not in command set (for difficulty filtering)
+            if cmd not in actual_command_set:
+                continue
+
+            # Apply weapon filtering
+            from logic.weapons import get_weapon_profile
+            profile = get_weapon_profile(weapon)
+
+            # Skip if command is filtered out by weapon
+            if cmd in profile.command_weights and profile.command_weights[cmd] == 0.0:
+                continue
+
+            # Check weapon-specific commands
+            from logic.commands import COMMANDS
+            cmd_obj = COMMANDS.get(cmd)
+            if cmd_obj and cmd_obj.is_weapon_specific:
+                if cmd_obj.weapons and weapon not in cmd_obj.weapons:
+                    continue
+
+            commands.append(cmd)
+            tracker.apply_command(cmd)
+            last_cmd = cmd
+
+    return commands
