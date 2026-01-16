@@ -559,11 +559,19 @@ async def session_stream(session_id: str):
                 await asyncio.sleep(interval)
 
         elif isinstance(config, RandomConfig):
-            # Random mode: random commands with constraints
-            command_ids = COMMAND_SETS.get(config.command_set, ["marche", "rompe"])
+            # Random mode: phrase-based random commands with position balance
+            from logic.generator import PositionTracker
+            from logic.phrases import get_phrases_for_difficulty, select_balanced_phrase
+
             start_time = asyncio.get_event_loop().time()
             end_time = start_time + config.duration_seconds
 
+            # Get phrases and command set for difficulty level
+            phrases = get_phrases_for_difficulty(config.command_set)
+            command_ids = COMMAND_SETS.get(config.command_set, ["marche", "rompe"])
+
+            # Position tracking for balance
+            tracker = PositionTracker()
             history: list[str] = []
             last_cmd: str | None = None
 
@@ -571,38 +579,71 @@ async def session_stream(session_id: str):
                 asyncio.get_event_loop().time() < end_time
                 and session.status == SessionStatus.RUNNING
             ):
-                # Select command with constraints and weapon filtering
-                cmd_id = select_constrained_command(command_ids, history, last_cmd, config.weapon)
-                cmd = COMMANDS[cmd_id]
+                # Select phrase based on current position
+                phrase = select_balanced_phrase(tracker.position, phrases)
 
-                # Update history
-                history.append(cmd_id)
-                if len(history) > 10:  # Keep last 10 for efficiency
-                    history.pop(0)
-                last_cmd = cmd_id
+                # Execute commands from phrase
+                for phrase_cmd_id in phrase.commands:
+                    if (
+                        asyncio.get_event_loop().time() >= end_time
+                        or session.status != SessionStatus.RUNNING
+                    ):
+                        break
 
-                remaining = int(end_time - asyncio.get_event_loop().time())
-                mins, secs = divmod(remaining, 60)
+                    # Apply fendez->remise rule
+                    if last_cmd and last_cmd == "fendez":
+                        phrase_cmd_id = "remise"
 
-                yield {
-                    "event": "status",
-                    "data": json.dumps({"remaining": f"{mins}:{secs:02d}"}),
-                }
-                yield {
-                    "event": "command",
-                    "data": json.dumps(cmd.to_dict()),
-                }
+                    # Skip commands not in difficulty's command set
+                    if phrase_cmd_id not in command_ids:
+                        continue
 
-                # Calculate interval with bond delay and weapon tempo
-                base_interval = random.randint(
-                    config.min_interval_ms, config.max_interval_ms
-                ) / 1000.0 / profile.tempo_multiplier
-                interval = get_post_command_delay(cmd_id, base_interval)
-                await asyncio.sleep(interval)
+                    # Apply weapon filtering
+                    cmd_obj = COMMANDS.get(phrase_cmd_id)
+                    if cmd_obj and cmd_obj.is_weapon_specific:
+                        if cmd_obj.weapons and config.weapon not in cmd_obj.weapons:
+                            continue
+
+                    # Check weapon weight exclusions
+                    if phrase_cmd_id in profile.command_weights:
+                        if profile.command_weights[phrase_cmd_id] == 0.0:
+                            continue
+
+                    cmd = COMMANDS[phrase_cmd_id]
+
+                    # Update tracking
+                    tracker.apply_command(phrase_cmd_id)
+                    history.append(phrase_cmd_id)
+                    if len(history) > 10:
+                        history.pop(0)
+                    last_cmd = phrase_cmd_id
+
+                    remaining = int(end_time - asyncio.get_event_loop().time())
+                    mins, secs = divmod(remaining, 60)
+
+                    yield {
+                        "event": "status",
+                        "data": json.dumps({"remaining": f"{mins}:{secs:02d}"}),
+                    }
+                    yield {
+                        "event": "command",
+                        "data": json.dumps(cmd.to_dict()),
+                    }
+
+                    # Calculate interval with bond delay and weapon tempo
+                    base_interval = random.randint(
+                        config.min_interval_ms, config.max_interval_ms
+                    ) / 1000.0 / profile.tempo_multiplier
+                    interval = get_post_command_delay(phrase_cmd_id, base_interval)
+                    await asyncio.sleep(interval)
 
         elif isinstance(config, IntervalConfig):
-            # Interval mode: work/rest cycles
+            # Interval mode: work/rest cycles with phrase-based commands
+            from logic.generator import PositionTracker
+            from logic.phrases import get_phrases_for_difficulty, select_balanced_phrase
+
             command_ids = COMMAND_SETS["intermediate"]
+            phrases = get_phrases_for_difficulty("intermediate")
             # Apply weapon tempo_multiplier: sabre faster, epee slower
             work_interval = 60.0 / (config.tempo_bpm * profile.tempo_multiplier)
 
@@ -610,7 +651,8 @@ async def session_stream(session_id: str):
                 if session.status != SessionStatus.RUNNING:
                     break
 
-                # Work phase
+                # Work phase with position tracking
+                tracker = PositionTracker()
                 history: list[str] = []
                 last_cmd: str | None = None
                 work_start = asyncio.get_event_loop().time()
@@ -620,33 +662,61 @@ async def session_stream(session_id: str):
                     asyncio.get_event_loop().time() < work_end
                     and session.status == SessionStatus.RUNNING
                 ):
-                    # Select command with weapon filtering
-                    cmd_id = select_constrained_command(command_ids, history, last_cmd, config.weapon)
-                    cmd = COMMANDS[cmd_id]
+                    # Select phrase based on position
+                    phrase = select_balanced_phrase(tracker.position, phrases)
 
-                    history.append(cmd_id)
-                    if len(history) > 10:
-                        history.pop(0)
-                    last_cmd = cmd_id
+                    for phrase_cmd_id in phrase.commands:
+                        if (
+                            asyncio.get_event_loop().time() >= work_end
+                            or session.status != SessionStatus.RUNNING
+                        ):
+                            break
 
-                    remaining = int(work_end - asyncio.get_event_loop().time())
+                        # Apply fendez->remise rule
+                        if last_cmd and last_cmd == "fendez":
+                            phrase_cmd_id = "remise"
 
-                    yield {
-                        "event": "status",
-                        "data": json.dumps({
-                            "set": set_num,
-                            "total_sets": config.sets,
-                            "phase": "work",
-                            "remaining": f"0:{remaining:02d}",
-                        }),
-                    }
-                    yield {
-                        "event": "command",
-                        "data": json.dumps(cmd.to_dict()),
-                    }
+                        # Skip if not in intermediate command set
+                        if phrase_cmd_id not in command_ids:
+                            continue
 
-                    interval = get_post_command_delay(cmd_id, work_interval)
-                    await asyncio.sleep(interval)
+                        # Apply weapon filtering
+                        cmd_obj = COMMANDS.get(phrase_cmd_id)
+                        if cmd_obj and cmd_obj.is_weapon_specific:
+                            if cmd_obj.weapons and config.weapon not in cmd_obj.weapons:
+                                continue
+
+                        if phrase_cmd_id in profile.command_weights:
+                            if profile.command_weights[phrase_cmd_id] == 0.0:
+                                continue
+
+                        cmd = COMMANDS[phrase_cmd_id]
+
+                        # Update tracking
+                        tracker.apply_command(phrase_cmd_id)
+                        history.append(phrase_cmd_id)
+                        if len(history) > 10:
+                            history.pop(0)
+                        last_cmd = phrase_cmd_id
+
+                        remaining = int(work_end - asyncio.get_event_loop().time())
+
+                        yield {
+                            "event": "status",
+                            "data": json.dumps({
+                                "set": set_num,
+                                "total_sets": config.sets,
+                                "phase": "work",
+                                "remaining": f"0:{remaining:02d}",
+                            }),
+                        }
+                        yield {
+                            "event": "command",
+                            "data": json.dumps(cmd.to_dict()),
+                        }
+
+                        interval = get_post_command_delay(phrase_cmd_id, work_interval)
+                        await asyncio.sleep(interval)
 
                 # Rest phase (except after last set)
                 if set_num < config.sets and session.status == SessionStatus.RUNNING:
