@@ -1,5 +1,6 @@
 """Command generation per training mode."""
 import random
+from dataclasses import dataclass, field
 from typing import Optional
 
 from logic.session import CombinationConfig, IntervalConfig
@@ -308,3 +309,48 @@ def select_weighted_command(weighted_commands: list[tuple[str, float]]) -> str:
 
     commands, weights = zip(*weighted_commands)
     return random.choices(commands, weights=weights, k=1)[0]
+
+
+# Position tracking constants
+POSITION_SOFT_LIMIT = 3.0  # Beyond this, bias toward return
+POSITION_HARD_LIMIT = 5.0  # Beyond this, force return direction
+
+
+@dataclass
+class PositionTracker:
+    """Track fencer position relative to starting en garde position.
+
+    Positive position = forward (toward opponent)
+    Negative position = backward (away from opponent)
+    """
+
+    position: float = 0.0
+
+    def apply_command(self, command_id: str) -> None:
+        """Update position based on command executed.
+
+        Args:
+            command_id: The command that was executed.
+        """
+        from logic.commands import POSITION_EFFECTS
+
+        effect = POSITION_EFFECTS.get(command_id, 0.0)
+        self.position += effect
+
+    def reset(self) -> None:
+        """Reset position to initial en garde (position 0)."""
+        self.position = 0.0
+
+    def get_position_bias(self) -> str:
+        """Get recommended movement direction based on current position.
+
+        Returns:
+            "forward" if far backward (should move forward)
+            "backward" if far forward (should move backward)
+            "neutral" if near starting position
+        """
+        if self.position > POSITION_SOFT_LIMIT:
+            return "backward"
+        elif self.position < -POSITION_SOFT_LIMIT:
+            return "forward"
+        return "neutral"

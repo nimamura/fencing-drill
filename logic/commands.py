@@ -111,6 +111,22 @@ DRILL_PAIRS: dict[str, tuple[str, str]] = {
     "fendez_remise": ("fendez", "remise"),
 }
 
+# Position effects for each command (relative to initial en garde position)
+# Positive values = forward (toward opponent), Negative = backward (away from opponent)
+POSITION_EFFECTS: dict[str, float] = {
+    "en_garde": 0.0,
+    "marche": 1.0,
+    "rompe": -1.0,
+    "allongez": 0.0,
+    "fendez": 2.0,
+    "remise": -2.0,  # Return from lunge position
+    "balancez": 0.0,
+    "double_marche": 2.0,
+    "bond_avant": 1.5,
+    "bond_arriere": -1.5,
+    "fleche": 3.0,
+}
+
 
 def get_command(command_id: str) -> Command:
     """Get a command by its ID.
