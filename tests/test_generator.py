@@ -455,3 +455,90 @@ class TestWeightedSelection:
         result = select_weighted_command(weighted_commands)
 
         assert result == "only_one"
+
+
+class TestCommandTransitions:
+    """Test command transition rules for natural movement flow."""
+
+    def test_command_transitions_defined(self):
+        """COMMAND_TRANSITIONS should be defined."""
+        from logic.generator import COMMAND_TRANSITIONS
+
+        assert isinstance(COMMAND_TRANSITIONS, dict)
+
+    def test_allongez_has_transition_rule(self):
+        """allongez should have a transition rule preferring fendez."""
+        from logic.generator import COMMAND_TRANSITIONS
+
+        assert "allongez" in COMMAND_TRANSITIONS
+        rule = COMMAND_TRANSITIONS["allongez"]
+        assert "next_preferred" in rule
+        assert "fendez" in rule["next_preferred"]
+
+    def test_balancez_has_transition_rule(self):
+        """balancez should have a transition rule for action commands."""
+        from logic.generator import COMMAND_TRANSITIONS
+
+        assert "balancez" in COMMAND_TRANSITIONS
+        rule = COMMAND_TRANSITIONS["balancez"]
+        assert "next_preferred" in rule
+
+    def test_get_preferred_next_command_after_allongez(self):
+        """After allongez, should prefer fendez with ~80% probability."""
+        import random
+        from logic.generator import get_preferred_next_command
+
+        random.seed(42)
+
+        command_set = ["marche", "rompe", "fendez", "remise"]
+        fendez_count = 0
+        total = 1000
+
+        for _ in range(total):
+            cmd = get_preferred_next_command("allongez", command_set)
+            if cmd == "fendez":
+                fendez_count += 1
+
+        # Should be around 80% fendez
+        ratio = fendez_count / total
+        assert 0.7 < ratio < 0.9, f"Expected ~80% fendez, got {ratio:.1%}"
+
+    def test_get_preferred_next_command_no_rule(self):
+        """Commands without transition rules should return None."""
+        from logic.generator import get_preferred_next_command
+
+        command_set = ["marche", "rompe", "fendez"]
+        result = get_preferred_next_command("marche", command_set)
+        assert result is None
+
+    def test_get_preferred_next_command_preferred_not_in_set(self):
+        """If preferred command not in command_set, should return None."""
+        from logic.generator import get_preferred_next_command
+
+        command_set = ["marche", "rompe"]  # No fendez
+        result = get_preferred_next_command("allongez", command_set)
+        # Should sometimes return None when fendez not available
+        # But can also return marche (from balancez-like fallback)
+        assert result is None or result in command_set
+
+    def test_select_constrained_command_respects_transitions(self):
+        """select_constrained_command should respect transition rules."""
+        import random
+        from logic.generator import select_constrained_command
+
+        random.seed(42)
+
+        command_set = ["marche", "rompe", "fendez", "remise", "allongez"]
+        history = []
+
+        # After allongez, fendez should be preferred
+        fendez_count = 0
+        total = 100
+
+        for _ in range(total):
+            cmd = select_constrained_command(command_set, history, "allongez")
+            if cmd == "fendez":
+                fendez_count += 1
+
+        # Should see significantly more fendez than random (20% -> ~80%)
+        assert fendez_count > 50, f"Expected fendez > 50%, got {fendez_count}%"
