@@ -24,6 +24,19 @@ BOND_COMMANDS = {"bond_avant", "bond_arriere"}
 # Wall prevention threshold (avoid 5+ consecutive same-direction)
 WALL_THRESHOLD = 4
 
+# Command transition rules for natural movement flow
+# Each command can specify preferred next commands with a probability
+COMMAND_TRANSITIONS: dict[str, dict] = {
+    "allongez": {
+        "next_preferred": ["fendez"],
+        "preferred_weight": 0.8,  # 80% chance of fendez after allongez
+    },
+    "balancez": {
+        "next_preferred": ["marche", "fendez", "bond_avant"],
+        "preferred_weight": 0.6,  # 60% chance of action after balancez
+    },
+}
+
 
 def generate_combination(config: CombinationConfig) -> list[str]:
     """Generate command sequence for combination mode.
@@ -158,6 +171,39 @@ def is_wall_risk(history: list[str], proposed_command: str) -> bool:
     return consecutive >= WALL_THRESHOLD
 
 
+def get_preferred_next_command(
+    last_command: str,
+    command_set: list[str],
+) -> Optional[str]:
+    """Get preferred next command based on transition rules.
+
+    Args:
+        last_command: The previous command ID.
+        command_set: Available commands to select from.
+
+    Returns:
+        A preferred command ID if rule matches and command available,
+        None otherwise.
+    """
+    if last_command not in COMMAND_TRANSITIONS:
+        return None
+
+    rule = COMMAND_TRANSITIONS[last_command]
+    preferred = rule.get("next_preferred", [])
+    weight = rule.get("preferred_weight", 0.5)
+
+    # Filter to commands available in command_set
+    available_preferred = [cmd for cmd in preferred if cmd in command_set]
+    if not available_preferred:
+        return None
+
+    # Apply probability - return preferred command with specified probability
+    if random.random() < weight:
+        return random.choice(available_preferred)
+
+    return None
+
+
 def select_constrained_command(
     command_set: list[str],
     history: list[str],
@@ -169,8 +215,9 @@ def select_constrained_command(
     Constraints:
     1. Must be from command_set (filtered by weapon)
     2. After fendez, must return remise
-    3. Avoid wall risk (5+ consecutive same direction)
-    4. Respect weapon-specific command weights
+    3. Apply command transition rules (e.g., allongez -> fendez)
+    4. Avoid wall risk (5+ consecutive same direction)
+    5. Respect weapon-specific command weights
 
     Args:
         command_set: Available commands to select from.
@@ -190,6 +237,13 @@ def select_constrained_command(
     # Apply weapon filtering
     profile = get_weapon_profile(weapon)
     filtered_commands = filter_commands_for_weapon(command_set, weapon, profile)
+
+    # Rule 2: Apply command transition rules
+    if last_command:
+        preferred = get_preferred_next_command(last_command, filtered_commands)
+        if preferred:
+            return preferred
+
     weighted_commands = apply_weapon_weights(filtered_commands, profile.command_weights)
 
     # Filter out wall risk commands
