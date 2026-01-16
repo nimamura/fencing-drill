@@ -187,6 +187,15 @@ app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 session_manager = SessionManager()
 
 
+@app.get("/googlec9f039cb609e237c.html")
+async def google_verification():
+    """Google Search Console verification file."""
+    return HTMLResponse(
+        content="google-site-verification: googlec9f039cb609e237c.html",
+        media_type="text/html",
+    )
+
+
 @app.get("/", response_class=HTMLResponse)
 async def root(request: Request):
     """Main dashboard."""
