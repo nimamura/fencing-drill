@@ -1,13 +1,13 @@
 <div class="space-y-4 fade-in">
-    <!-- 動作選択 -->
+    <!-- 練習パターン選択 -->
     <div>
-        <label class="block text-sm text-fencing-steel mb-2" data-i18n="settings.action">動作</label>
-        <select name="command_id" class="w-full bg-fencing-surface-light border border-fencing-surface-light rounded-lg px-4 py-2.5 text-fencing-silver focus:outline-none focus:border-fencing-gold/50 transition-colors">
-            <option value="marche" data-i18n="command.option.marche">マルシェ（前進）</option>
-            <option value="rompe" data-i18n="command.option.rompe">ロンペ（後退）</option>
-            <option value="fendez" data-i18n="command.option.fendez">ファンドゥ（突き）</option>
-            <option value="bond_avant" data-i18n="command.option.bond_avant">ボンナバン（跳躍前進）</option>
-            <option value="bond_arriere" data-i18n="command.option.bond_arriere">ボンナリエール（跳躍後退）</option>
+        <label class="block text-sm text-fencing-steel mb-2" data-i18n="settings.drill_pair">練習パターン</label>
+        <select name="pair_id" class="w-full bg-fencing-surface-light border border-fencing-surface-light rounded-lg px-4 py-2.5 text-fencing-silver focus:outline-none focus:border-fencing-gold/50 transition-colors">
+            <option value="marche_rompe" data-i18n="pair.option.marche_rompe">前後移動（マルシェ↔ロンペ）</option>
+            <option value="en_garde_fendez" data-i18n="pair.option.en_garde_fendez">構え→突き</option>
+            <option value="bond" data-i18n="pair.option.bond">跳躍前後（ボン↔ボン）</option>
+            <option value="allongez_fendez" data-i18n="pair.option.allongez_fendez">伸ばして突き</option>
+            <option value="fendez_remise" data-i18n="pair.option.fendez_remise">突き→構え戻し</option>
         </select>
     </div>
 

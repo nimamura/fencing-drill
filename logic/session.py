@@ -27,7 +27,7 @@ class TrainingMode(Enum):
 class BasicConfig:
     """Configuration for Basic training mode."""
 
-    command_id: str = "marche"
+    pair_id: str = "marche_rompe"
     repetitions: int = 10
     tempo_bpm: int = 60
     weapon: str = "foil"

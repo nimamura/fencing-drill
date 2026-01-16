@@ -102,6 +102,15 @@ COMMAND_SETS: dict[str, list[str]] = {
     "advanced": ["marche", "rompe", "fendez", "remise", "bond_avant", "bond_arriere", "balancez"],
 }
 
+# Drill pairs for basic mode pair training
+DRILL_PAIRS: dict[str, tuple[str, str]] = {
+    "marche_rompe": ("marche", "rompe"),
+    "en_garde_fendez": ("en_garde", "fendez"),
+    "bond": ("bond_avant", "bond_arriere"),
+    "allongez_fendez": ("allongez", "fendez"),
+    "fendez_remise": ("fendez", "remise"),
+}
+
 
 def get_command(command_id: str) -> Command:
     """Get a command by its ID.

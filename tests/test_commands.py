@@ -265,3 +265,68 @@ class TestIsCommandValidForWeapon:
         from logic.commands import is_command_valid_for_weapon
 
         assert is_command_valid_for_weapon("nonexistent", "foil") is False
+
+
+class TestDrillPairs:
+    """Test DRILL_PAIRS for basic mode pair training."""
+
+    def test_drill_pairs_contains_all_pairs(self):
+        """DRILL_PAIRS should contain all 5 training pairs."""
+        from logic.commands import DRILL_PAIRS
+
+        expected_pairs = [
+            "marche_rompe",
+            "en_garde_fendez",
+            "bond",
+            "allongez_fendez",
+            "fendez_remise",
+        ]
+
+        for pair_id in expected_pairs:
+            assert pair_id in DRILL_PAIRS, f"Missing pair: {pair_id}"
+
+    def test_drill_pairs_are_tuples(self):
+        """Each drill pair should be a tuple of two command IDs."""
+        from logic.commands import DRILL_PAIRS
+
+        for pair_id, pair in DRILL_PAIRS.items():
+            assert isinstance(pair, tuple), f"{pair_id} should be a tuple"
+            assert len(pair) == 2, f"{pair_id} should have exactly 2 commands"
+
+    def test_drill_pairs_reference_valid_commands(self):
+        """All commands in DRILL_PAIRS should exist in COMMANDS."""
+        from logic.commands import DRILL_PAIRS, COMMANDS
+
+        for pair_id, (cmd1, cmd2) in DRILL_PAIRS.items():
+            assert cmd1 in COMMANDS, f"{pair_id}: {cmd1} not in COMMANDS"
+            assert cmd2 in COMMANDS, f"{pair_id}: {cmd2} not in COMMANDS"
+
+    def test_marche_rompe_pair(self):
+        """marche_rompe pair should be (marche, rompe)."""
+        from logic.commands import DRILL_PAIRS
+
+        assert DRILL_PAIRS["marche_rompe"] == ("marche", "rompe")
+
+    def test_en_garde_fendez_pair(self):
+        """en_garde_fendez pair should be (en_garde, fendez)."""
+        from logic.commands import DRILL_PAIRS
+
+        assert DRILL_PAIRS["en_garde_fendez"] == ("en_garde", "fendez")
+
+    def test_bond_pair(self):
+        """bond pair should be (bond_avant, bond_arriere)."""
+        from logic.commands import DRILL_PAIRS
+
+        assert DRILL_PAIRS["bond"] == ("bond_avant", "bond_arriere")
+
+    def test_allongez_fendez_pair(self):
+        """allongez_fendez pair should be (allongez, fendez)."""
+        from logic.commands import DRILL_PAIRS
+
+        assert DRILL_PAIRS["allongez_fendez"] == ("allongez", "fendez")
+
+    def test_fendez_remise_pair(self):
+        """fendez_remise pair should be (fendez, remise)."""
+        from logic.commands import DRILL_PAIRS
+
+        assert DRILL_PAIRS["fendez_remise"] == ("fendez", "remise")

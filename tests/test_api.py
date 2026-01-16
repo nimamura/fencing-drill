@@ -45,7 +45,7 @@ class TestSessionStartEndpoint:
                 "/session/start",
                 data={
                     "mode": "basic",
-                    "command_id": "marche",
+                    "pair_id": "marche_rompe",
                     "repetitions": "10",
                     "tempo_bpm": "60",
                 },
@@ -64,7 +64,7 @@ class TestSessionStartEndpoint:
                 "/session/start",
                 data={
                     "mode": "basic",
-                    "command_id": "marche",
+                    "pair_id": "marche_rompe",
                     "repetitions": "10",
                     "tempo_bpm": "60",
                 },
@@ -88,7 +88,7 @@ class TestSessionStopEndpoint:
                 "/session/start",
                 data={
                     "mode": "basic",
-                    "command_id": "marche",
+                    "pair_id": "marche_rompe",
                     "repetitions": "10",
                     "tempo_bpm": "60",
                 },
@@ -148,7 +148,7 @@ class TestSSEEndpoint:
         # Create session directly via session manager
         session = session_manager.create_session(
             mode=TrainingMode.BASIC,
-            config=BasicConfig(command_id="marche", repetitions=2, tempo_bpm=120)
+            config=BasicConfig(pair_id="marche_rompe", repetitions=2, tempo_bpm=120)
         )
         session.start()
 
@@ -177,7 +177,7 @@ class TestWeaponParameter:
                 "/session/start",
                 data={
                     "mode": "basic",
-                    "command_id": "marche",
+                    "pair_id": "marche_rompe",
                     "repetitions": "10",
                     "tempo_bpm": "60",
                     "weapon": "foil",
@@ -196,7 +196,7 @@ class TestWeaponParameter:
                 "/session/start",
                 data={
                     "mode": "basic",
-                    "command_id": "marche",
+                    "pair_id": "marche_rompe",
                     "repetitions": "10",
                     "tempo_bpm": "60",
                     "weapon": "epee",
@@ -215,7 +215,7 @@ class TestWeaponParameter:
                 "/session/start",
                 data={
                     "mode": "basic",
-                    "command_id": "marche",
+                    "pair_id": "marche_rompe",
                     "repetitions": "10",
                     "tempo_bpm": "60",
                     "weapon": "sabre",
@@ -234,7 +234,7 @@ class TestWeaponParameter:
                 "/session/start",
                 data={
                     "mode": "basic",
-                    "command_id": "marche",
+                    "pair_id": "marche_rompe",
                     "repetitions": "10",
                     "tempo_bpm": "60",
                     "weapon": "katana",
@@ -253,7 +253,7 @@ class TestWeaponParameter:
                 "/session/start",
                 data={
                     "mode": "basic",
-                    "command_id": "marche",
+                    "pair_id": "marche_rompe",
                     "repetitions": "10",
                     "tempo_bpm": "60",
                 },
@@ -266,51 +266,12 @@ class TestWeaponParameter:
             assert active_session.config.weapon == "foil"
 
 
-class TestWeaponCommandValidation:
-    """Test weapon-command compatibility validation."""
+class TestWeaponPairValidation:
+    """Test weapon-pair compatibility validation."""
 
     @pytest.mark.asyncio
-    async def test_fleche_rejected_for_foil(self):
-        """POST /session/start with fleche+foil should return 422."""
-        from main import app
-
-        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
-            response = await client.post(
-                "/session/start",
-                data={
-                    "mode": "basic",
-                    "command_id": "fleche",
-                    "repetitions": "10",
-                    "tempo_bpm": "60",
-                    "weapon": "foil",
-                },
-            )
-
-        assert response.status_code == 422
-        assert "fleche" in response.text.lower()
-
-    @pytest.mark.asyncio
-    async def test_fleche_accepted_for_sabre(self):
-        """POST /session/start with fleche+sabre should succeed."""
-        from main import app
-
-        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
-            response = await client.post(
-                "/session/start",
-                data={
-                    "mode": "basic",
-                    "command_id": "fleche",
-                    "repetitions": "10",
-                    "tempo_bpm": "60",
-                    "weapon": "sabre",
-                },
-            )
-
-        assert response.status_code == 200
-
-    @pytest.mark.asyncio
-    async def test_marche_accepted_for_all_weapons(self):
-        """POST /session/start with marche should work for all weapons."""
+    async def test_pair_accepted_for_all_weapons(self):
+        """POST /session/start with marche_rompe pair should work for all weapons."""
         from main import app
 
         for weapon in ["foil", "epee", "sabre"]:
@@ -319,11 +280,11 @@ class TestWeaponCommandValidation:
                     "/session/start",
                     data={
                         "mode": "basic",
-                        "command_id": "marche",
+                        "pair_id": "marche_rompe",
                         "repetitions": "10",
                         "tempo_bpm": "60",
                         "weapon": weapon,
                     },
                 )
 
-            assert response.status_code == 200, f"marche should be valid for {weapon}"
+            assert response.status_code == 200, f"marche_rompe should be valid for {weapon}"

@@ -37,7 +37,7 @@ class TestSessionConfig:
         from logic.session import BasicConfig
 
         config = BasicConfig()
-        assert config.command_id == "marche"
+        assert config.pair_id == "marche_rompe"
         assert config.repetitions == 10
         assert config.tempo_bpm == 60
 
@@ -45,8 +45,8 @@ class TestSessionConfig:
         """BasicConfig should accept custom values."""
         from logic.session import BasicConfig
 
-        config = BasicConfig(command_id="rompe", repetitions=20, tempo_bpm=90)
-        assert config.command_id == "rompe"
+        config = BasicConfig(pair_id="en_garde_fendez", repetitions=20, tempo_bpm=90)
+        assert config.pair_id == "en_garde_fendez"
         assert config.repetitions == 20
         assert config.tempo_bpm == 90
 
@@ -122,10 +122,10 @@ class TestSession:
         """Session should store configuration."""
         from logic.session import Session, TrainingMode, BasicConfig
 
-        config = BasicConfig(command_id="rompe", repetitions=15)
+        config = BasicConfig(pair_id="bond", repetitions=15)
         session = Session(mode=TrainingMode.BASIC, config=config)
 
-        assert session.config.command_id == "rompe"
+        assert session.config.pair_id == "bond"
         assert session.config.repetitions == 15
 
 

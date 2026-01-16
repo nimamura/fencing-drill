@@ -10,7 +10,7 @@ from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, ValidationError, field_validator, model_validator
 from sse_starlette.sse import EventSourceResponse
 
-from logic.commands import COMMAND_SETS, COMMANDS
+from logic.commands import COMMAND_SETS, COMMANDS, DRILL_PAIRS
 from logic.generator import PATTERNS
 from logic.session import (
     BasicConfig,
@@ -46,7 +46,7 @@ class SessionStartRequest(BaseModel):
 
     mode: str
     weapon: str = "foil"
-    command_id: str = "marche"
+    pair_id: str = "marche_rompe"
     repetitions: int = 10
     tempo_bpm: int = 60
     command_set: str = "beginner"
@@ -76,11 +76,11 @@ class SessionStartRequest(BaseModel):
             raise ValueError(f"Invalid weapon: {v}. Must be one of {valid_weapons}")
         return v
 
-    @field_validator("command_id")
+    @field_validator("pair_id")
     @classmethod
-    def validate_command_id(cls, v: str) -> str:
-        if v not in COMMANDS:
-            raise ValueError(f"Invalid command_id: {v}")
+    def validate_pair_id(cls, v: str) -> str:
+        if v not in DRILL_PAIRS:
+            raise ValueError(f"Invalid pair_id: {v}")
         return v
 
     @field_validator("command_set")
@@ -219,7 +219,7 @@ async def start_session(
     request: Request,
     mode: Annotated[str, Form()],
     weapon: Annotated[str, Form()] = "foil",
-    command_id: Annotated[str, Form()] = "marche",
+    pair_id: Annotated[str, Form()] = "marche_rompe",
     repetitions: Annotated[int, Form()] = 10,
     tempo_bpm: Annotated[int, Form()] = 60,
     command_set: Annotated[str, Form()] = "beginner",
@@ -237,7 +237,7 @@ async def start_session(
         validated = SessionStartRequest(
             mode=mode,
             weapon=weapon,
-            command_id=command_id,
+            pair_id=pair_id,
             repetitions=repetitions,
             tempo_bpm=tempo_bpm,
             command_set=command_set,
@@ -269,19 +269,9 @@ async def start_session(
     # Create config based on mode
     training_mode = TrainingMode(validated.mode)
 
-    # Validate weapon-command compatibility for Basic mode
-    if training_mode == TrainingMode.BASIC:
-        from logic.commands import is_command_valid_for_weapon
-
-        if not is_command_valid_for_weapon(validated.command_id, validated.weapon):
-            raise HTTPException(
-                status_code=422,
-                detail=f"Command '{validated.command_id}' is not valid for weapon '{validated.weapon}'"
-            )
-
     if training_mode == TrainingMode.BASIC:
         config = BasicConfig(
-            command_id=validated.command_id,
+            pair_id=validated.pair_id,
             repetitions=validated.repetitions,
             tempo_bpm=validated.tempo_bpm,
             weapon=validated.weapon,
@@ -519,8 +509,10 @@ async def session_stream(session_id: str):
         await asyncio.sleep(2)  # Pause after en_garde
 
         if isinstance(config, BasicConfig):
-            # Basic mode: repeat single command
-            cmd = COMMANDS.get(config.command_id, COMMANDS["marche"])
+            # Basic mode: alternate between paired commands
+            cmd1_id, cmd2_id = DRILL_PAIRS[config.pair_id]
+            cmd1 = COMMANDS[cmd1_id]
+            cmd2 = COMMANDS[cmd2_id]
             # Apply weapon tempo_multiplier: sabre faster, epee slower
             interval = 60.0 / (config.tempo_bpm * profile.tempo_multiplier)
 
@@ -529,6 +521,7 @@ async def session_stream(session_id: str):
                     break
 
                 rep = i + 1
+                cmd = cmd1 if i % 2 == 0 else cmd2
                 yield {
                     "event": "status",
                     "data": json.dumps(

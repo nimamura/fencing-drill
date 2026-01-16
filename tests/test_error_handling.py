@@ -37,7 +37,7 @@ class TestInputValidation:
                 "/session/start",
                 data={
                     "mode": "basic",
-                    "command_id": "marche",
+                    "pair_id": "marche_rompe",
                     "repetitions": "-5",
                     "tempo_bpm": "60",
                 },
@@ -57,7 +57,7 @@ class TestInputValidation:
                 "/session/start",
                 data={
                     "mode": "basic",
-                    "command_id": "marche",
+                    "pair_id": "marche_rompe",
                     "repetitions": "0",
                     "tempo_bpm": "60",
                 },
@@ -77,7 +77,7 @@ class TestInputValidation:
                 "/session/start",
                 data={
                     "mode": "basic",
-                    "command_id": "marche",
+                    "pair_id": "marche_rompe",
                     "repetitions": "10",
                     "tempo_bpm": "10",  # Below minimum of 30
                 },
@@ -97,7 +97,7 @@ class TestInputValidation:
                 "/session/start",
                 data={
                     "mode": "basic",
-                    "command_id": "marche",
+                    "pair_id": "marche_rompe",
                     "repetitions": "10",
                     "tempo_bpm": "200",  # Above maximum of 120
                 },
@@ -106,8 +106,8 @@ class TestInputValidation:
         assert response.status_code == 422
 
     @pytest.mark.asyncio
-    async def test_invalid_command_id_returns_422(self):
-        """POST /session/start with invalid command_id should return 422."""
+    async def test_invalid_pair_id_returns_422(self):
+        """POST /session/start with invalid pair_id should return 422."""
         from main import app
 
         async with AsyncClient(
@@ -117,7 +117,7 @@ class TestInputValidation:
                 "/session/start",
                 data={
                     "mode": "basic",
-                    "command_id": "nonexistent_command",
+                    "pair_id": "nonexistent_pair",
                     "repetitions": "10",
                     "tempo_bpm": "60",
                 },
@@ -237,7 +237,7 @@ class TestInputValidation:
                 "/session/start",
                 data={
                     "mode": "basic",
-                    "command_id": "marche",
+                    "pair_id": "marche_rompe",
                     "repetitions": "100",  # Above max of 50
                     "tempo_bpm": "60",
                 },
@@ -284,7 +284,7 @@ class TestSSEErrors:
         # Create and immediately finish a session
         session = session_manager.create_session(
             mode=TrainingMode.BASIC,
-            config=BasicConfig(command_id="marche", repetitions=2, tempo_bpm=120),
+            config=BasicConfig(pair_id="marche_rompe", repetitions=2, tempo_bpm=120),
         )
         session.stop()  # Mark as finished
 
@@ -316,7 +316,7 @@ class TestErrorResponseFormat:
                 "/session/start",
                 data={
                     "mode": "basic",
-                    "command_id": "marche",
+                    "pair_id": "marche_rompe",
                     "repetitions": "-5",
                     "tempo_bpm": "60",
                 },

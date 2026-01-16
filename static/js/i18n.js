@@ -39,7 +39,7 @@ const TRANSLATIONS = {
         "status.finished": "終了",
 
         // Settings - Basic
-        "settings.action": "動作",
+        "settings.drill_pair": "練習パターン",
         "settings.tempo": "テンポ",
         "settings.tempo.slow": "ゆっくり",
         "settings.tempo.fast": "速い",
@@ -93,12 +93,19 @@ const TRANSLATIONS = {
         "command.rest": "ルポ",
         "command.rest.desc": "休憩",
 
-        // Command options in settings
+        // Command options in settings (legacy)
         "command.option.marche": "マルシェ（前進）",
         "command.option.rompe": "ロンペ（後退）",
         "command.option.fendez": "ファンドゥ（突き）",
         "command.option.bond_avant": "ボンナバン（跳躍前進）",
         "command.option.bond_arriere": "ボンナリエール（跳躍後退）",
+
+        // Drill pair options
+        "pair.option.marche_rompe": "前後移動（マルシェ↔ロンペ）",
+        "pair.option.en_garde_fendez": "構え→突き",
+        "pair.option.bond": "跳躍前後（ボン↔ボン）",
+        "pair.option.allongez_fendez": "伸ばして突き",
+        "pair.option.fendez_remise": "突き→構え戻し",
 
         // Units
         "unit.bpm": "BPM",
@@ -142,7 +149,7 @@ const TRANSLATIONS = {
         "status.finished": "Finished",
 
         // Settings - Basic
-        "settings.action": "Action",
+        "settings.drill_pair": "Drill Pattern",
         "settings.tempo": "Tempo",
         "settings.tempo.slow": "Slow",
         "settings.tempo.fast": "Fast",
@@ -196,12 +203,19 @@ const TRANSLATIONS = {
         "command.rest": "Rest",
         "command.rest.desc": "Rest",
 
-        // Command options in settings
+        // Command options in settings (legacy)
         "command.option.marche": "Advance (forward)",
         "command.option.rompe": "Retreat (back)",
         "command.option.fendez": "Lunge (thrust)",
         "command.option.bond_avant": "Jump forward (leap)",
         "command.option.bond_arriere": "Jump back (leap)",
+
+        // Drill pair options
+        "pair.option.marche_rompe": "Forward/Back (Advance↔Retreat)",
+        "pair.option.en_garde_fendez": "Guard→Lunge",
+        "pair.option.bond": "Jump Forward/Back",
+        "pair.option.allongez_fendez": "Extend→Lunge",
+        "pair.option.fendez_remise": "Lunge→Recover",
 
         // Units
         "unit.bpm": "BPM",
@@ -245,7 +259,7 @@ const TRANSLATIONS = {
         "status.finished": "Terminé",
 
         // Settings - Basic
-        "settings.action": "Action",
+        "settings.drill_pair": "Exercice",
         "settings.tempo": "Tempo",
         "settings.tempo.slow": "Lent",
         "settings.tempo.fast": "Rapide",
@@ -299,12 +313,19 @@ const TRANSLATIONS = {
         "command.rest": "Repos",
         "command.rest.desc": "Repos",
 
-        // Command options in settings
+        // Command options in settings (legacy)
         "command.option.marche": "Marchez (avancer)",
         "command.option.rompe": "Rompez (reculer)",
         "command.option.fendez": "Fendez (fente)",
         "command.option.bond_avant": "Bond en avant (saut)",
         "command.option.bond_arriere": "Bond en arrière (saut)",
+
+        // Drill pair options
+        "pair.option.marche_rompe": "Avant/Arrière (Marchez↔Rompez)",
+        "pair.option.en_garde_fendez": "En garde→Fendez",
+        "pair.option.bond": "Bond avant/arrière",
+        "pair.option.allongez_fendez": "Allongez→Fendez",
+        "pair.option.fendez_remise": "Fendez→Remise",
 
         // Units
         "unit.bpm": "BPM",

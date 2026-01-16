@@ -17,7 +17,7 @@ class TestSessionProgress:
 
         session = Session(
             mode=TrainingMode.BASIC,
-            config=BasicConfig(command_id="marche", repetitions=10, tempo_bpm=60),
+            config=BasicConfig(pair_id="marche_rompe", repetitions=10, tempo_bpm=60),
         )
         session.start()
 
@@ -85,7 +85,7 @@ class TestSessionPauseResume:
 
         session = Session(
             mode=TrainingMode.BASIC,
-            config=BasicConfig(command_id="marche", repetitions=10, tempo_bpm=60),
+            config=BasicConfig(pair_id="marche_rompe", repetitions=10, tempo_bpm=60),
         )
         session.start()
         assert session.status == SessionStatus.RUNNING
@@ -104,7 +104,7 @@ class TestSessionPauseResume:
 
         session = Session(
             mode=TrainingMode.BASIC,
-            config=BasicConfig(command_id="marche", repetitions=10, tempo_bpm=60),
+            config=BasicConfig(pair_id="marche_rompe", repetitions=10, tempo_bpm=60),
         )
         session.start()
         session.progress = {"current_rep": 5}
@@ -125,7 +125,7 @@ class TestSessionPauseResume:
 
         session = Session(
             mode=TrainingMode.BASIC,
-            config=BasicConfig(command_id="marche", repetitions=10, tempo_bpm=60),
+            config=BasicConfig(pair_id="marche_rompe", repetitions=10, tempo_bpm=60),
         )
         session.start()
         session.progress = {"current_rep": 7, "total_reps": 10}
@@ -148,7 +148,7 @@ class TestSessionRecoveryAPI:
         # Create a running session
         session = session_manager.create_session(
             mode=TrainingMode.BASIC,
-            config=BasicConfig(command_id="marche", repetitions=10, tempo_bpm=60),
+            config=BasicConfig(pair_id="marche_rompe", repetitions=10, tempo_bpm=60),
         )
         session.start()
         session.progress = {"current_rep": 5, "total_reps": 10}
@@ -174,7 +174,7 @@ class TestSessionRecoveryAPI:
 
         session = session_manager.create_session(
             mode=TrainingMode.BASIC,
-            config=BasicConfig(command_id="marche", repetitions=10, tempo_bpm=60),
+            config=BasicConfig(pair_id="marche_rompe", repetitions=10, tempo_bpm=60),
         )
         session.start()
 
@@ -197,7 +197,7 @@ class TestSessionRecoveryAPI:
 
         session = session_manager.create_session(
             mode=TrainingMode.BASIC,
-            config=BasicConfig(command_id="marche", repetitions=10, tempo_bpm=60),
+            config=BasicConfig(pair_id="marche_rompe", repetitions=10, tempo_bpm=60),
         )
         session.start()
         session.pause()
@@ -261,7 +261,7 @@ class TestSSEReconnection:
 
         session = session_manager.create_session(
             mode=TrainingMode.BASIC,
-            config=BasicConfig(command_id="marche", repetitions=10, tempo_bpm=60),
+            config=BasicConfig(pair_id="marche_rompe", repetitions=10, tempo_bpm=60),
         )
         session.start()
         session.pause()
