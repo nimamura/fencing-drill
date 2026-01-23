@@ -188,6 +188,12 @@ app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 session_manager = SessionManager()
 
 
+@app.get("/health")
+async def health():
+    """Health check endpoint for monitoring."""
+    return {"status": "ok"}
+
+
 @app.get("/googlec9f039cb609e237c.html")
 async def google_verification():
     """Google Search Console verification file."""
