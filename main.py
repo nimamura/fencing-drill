@@ -213,6 +213,19 @@ app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 session_manager = SessionManager()
 
 
+@app.on_event("shutdown")
+async def shutdown_event():
+    """Clean up sessions on application shutdown."""
+    logger.info("Fencing Drill application shutting down")
+    # Stop all active sessions
+    for session in list(session_manager.sessions.values()):
+        if session.status == SessionStatus.RUNNING:
+            session.stop()
+    # Clear all sessions
+    session_manager.sessions.clear()
+    logger.info("All sessions cleaned up")
+
+
 @app.get("/health")
 async def health():
     """Health check endpoint for monitoring."""

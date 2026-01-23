@@ -33,14 +33,13 @@ class TestShutdownEvent:
         """Shutdown event should log a message."""
         from main import app
 
-        with caplog.at_level(logging.INFO):
+        with caplog.at_level(logging.INFO, logger="main"):
             # Trigger shutdown event
             for handler in app.router.on_shutdown:
                 await handler()
 
         # Should log shutdown message
-        log_messages = [record.message for record in caplog.records]
-        assert any("shutdown" in msg.lower() for msg in log_messages)
+        assert "shutting down" in caplog.text.lower()
 
     @pytest.mark.asyncio
     async def test_shutdown_clears_all_sessions(self):
