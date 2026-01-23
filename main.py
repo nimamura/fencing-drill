@@ -18,6 +18,7 @@ from logic.session import (
     IntervalConfig,
     RandomConfig,
     Session,
+    SessionLimitExceeded,
     SessionManager,
     SessionStatus,
     TrainingMode,
@@ -302,7 +303,28 @@ async def start_session(
     else:
         config = BasicConfig()
 
-    session = session_manager.create_session(mode=training_mode, config=config)
+    try:
+        session = session_manager.create_session(mode=training_mode, config=config)
+    except SessionLimitExceeded:
+        return HTMLResponse(
+            content="""
+            <div id="session-container">
+                <section class="relative bg-fencing-surface/30 rounded-2xl border border-red-500/50 overflow-hidden">
+                    <div class="relative px-6 py-16 min-h-[200px] flex flex-col items-center justify-center text-center">
+                        <div class="w-16 h-16 mx-auto mb-4 rounded-full border-2 border-red-500/50 flex items-center justify-center">
+                            <svg class="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                            </svg>
+                        </div>
+                        <p class="text-red-400 text-lg font-medium mb-2" data-i18n="error.server_busy">サーバーが混み合っています</p>
+                        <p class="text-fencing-steel/70 text-sm" data-i18n="error.try_later">しばらくお待ちいただいてから再度お試しください</p>
+                    </div>
+                </section>
+            </div>
+            """,
+            status_code=429,
+        )
+
     session.start()
 
     # Return HTML fragment with session info
