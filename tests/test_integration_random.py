@@ -206,3 +206,24 @@ class TestRemiseConstraints:
                 assert commands[i + 1] != "remise", (
                     f"Found consecutive remise at index {i} and {i + 1}"
                 )
+
+    def test_remise_frequency_within_limit(self):
+        """Remise should not exceed 25% of all commands."""
+        from logic.generator import generate_random_commands
+
+        random.seed(42)
+
+        # Generate many commands for statistical significance
+        commands = generate_random_commands(
+            command_set="intermediate",
+            count=500,
+        )
+
+        remise_count = sum(1 for cmd in commands if cmd == "remise")
+        remise_ratio = remise_count / len(commands)
+
+        # Remise should not exceed 25%
+        assert remise_ratio <= 0.25, (
+            f"Remise frequency {remise_ratio:.1%} exceeds 25% limit "
+            f"({remise_count} out of {len(commands)})"
+        )
