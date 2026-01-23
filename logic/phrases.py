@@ -17,6 +17,7 @@ class Phrase:
     commands: list[str]
     net_movement: float  # Total position change after phrase
     difficulty: str  # "beginner", "intermediate", "advanced"
+    weight: float = 1.0  # Selection weight (0.5 for attack phrases with remise)
 
 
 # Predefined phrases for different training scenarios
@@ -50,6 +51,7 @@ PHRASES: dict[str, Phrase] = {
         commands=["marche", "marche", "fendez", "remise"],
         net_movement=2.0,  # 1 + 1 + 2 - 2 = 2
         difficulty="intermediate",
+        weight=0.5,  # Reduced weight to lower remise frequency
     ),
     "retreat_counter": Phrase(
         id="retreat_counter",
@@ -57,6 +59,7 @@ PHRASES: dict[str, Phrase] = {
         commands=["rompe", "rompe", "marche", "fendez", "remise"],
         net_movement=-1.0,  # -1 - 1 + 1 + 2 - 2 = -1
         difficulty="intermediate",
+        weight=0.5,  # Reduced weight to lower remise frequency
     ),
     "prep_attack": Phrase(
         id="prep_attack",
@@ -64,6 +67,7 @@ PHRASES: dict[str, Phrase] = {
         commands=["allongez", "fendez", "remise"],
         net_movement=0.0,  # 0 + 2 - 2 = 0
         difficulty="intermediate",
+        weight=0.5,  # Reduced weight to lower remise frequency
     ),
     "distance_adjust": Phrase(
         id="distance_adjust",
@@ -93,6 +97,7 @@ PHRASES: dict[str, Phrase] = {
         commands=["bond_avant", "marche", "fendez", "remise"],
         net_movement=2.5,  # 1.5 + 1 + 2 - 2 = 2.5
         difficulty="advanced",
+        weight=0.5,  # Reduced weight to lower remise frequency
     ),
     "defensive_retreat": Phrase(
         id="defensive_retreat",
@@ -107,6 +112,7 @@ PHRASES: dict[str, Phrase] = {
         commands=["balancez", "marche", "fendez", "remise"],
         net_movement=1.0,  # 0 + 1 + 2 - 2 = 1
         difficulty="advanced",
+        weight=0.5,  # Reduced weight to lower remise frequency
     ),
 }
 
@@ -176,21 +182,22 @@ def select_balanced_phrase(
     # Within limits, use weighted selection
     weights = []
     for phrase in available_phrases:
-        weight = 1.0
+        # Start with phrase's base weight (e.g., 0.5 for attack phrases)
+        weight = phrase.weight
 
         # Beyond soft limit, bias toward return direction
         if position > POSITION_SOFT_LIMIT:
             # Far forward, prefer backward movement
             if phrase.net_movement < 0:
-                weight = 2.0  # Prefer backward
+                weight *= 2.0  # Prefer backward
             elif phrase.net_movement > 0:
-                weight = 0.5  # Discourage forward
+                weight *= 0.5  # Discourage forward
         elif position < -POSITION_SOFT_LIMIT:
             # Far backward, prefer forward movement
             if phrase.net_movement > 0:
-                weight = 2.0  # Prefer forward
+                weight *= 2.0  # Prefer forward
             elif phrase.net_movement < 0:
-                weight = 0.5  # Discourage backward
+                weight *= 0.5  # Discourage backward
 
         weights.append(weight)
 
