@@ -1,5 +1,7 @@
 """FastAPI application for Fencing Drill."""
 import asyncio
+import logging
+import time
 from pathlib import Path
 from typing import Annotated
 
@@ -175,7 +177,28 @@ class SessionStartRequest(BaseModel):
             raise ValueError("min_interval_ms must be <= max_interval_ms")
         return self
 
+# Setup logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+)
+logger = logging.getLogger(__name__)
+logger.info("Fencing Drill application starting")
+
 app = FastAPI(title="Fencing Drill")
+
+
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    """Log all HTTP requests and responses."""
+    start_time = time.time()
+    response = await call_next(request)
+    process_time = time.time() - start_time
+    logger.info(
+        f"{request.method} {request.url.path} - {response.status_code} ({process_time:.3f}s)"
+    )
+    return response
+
 
 # Setup paths
 BASE_DIR = Path(__file__).parent
