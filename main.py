@@ -352,7 +352,7 @@ async def start_session(
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M6 6h12v12H6z"></path>
                         </svg>
-                        停止
+                        <span data-i18n="button.stop">停止</span>
                     </button>
                 </div>
             </section>
@@ -408,7 +408,7 @@ async def stop_session(request: Request):
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                     </div>
-                    <p class="text-fencing-steel/50 text-sm">設定を確認して「開始」を押してください</p>
+                    <p class="text-fencing-steel/50 text-sm"><span data-i18n="status.idle">設定を確認して「開始」を押してください</span></p>
                 </div>
             </div>
             <div class="blade-line"></div>
@@ -420,7 +420,7 @@ async def stop_session(request: Request):
                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M8 5v14l11-7z"></path>
                     </svg>
-                    開始
+                    <span data-i18n="button.start">開始</span>
                 </button>
             </div>
         </section>
