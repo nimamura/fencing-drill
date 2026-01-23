@@ -92,6 +92,8 @@ const TRANSLATIONS = {
         "command.fleche.desc": "走り突き",
         "command.rest": "ルポ",
         "command.rest.desc": "休憩",
+        "command.halte": "アルト",
+        "command.halte.desc": "止め",
 
         // Command options in settings (legacy)
         "command.option.marche": "マルシェ（前進）",
@@ -202,6 +204,8 @@ const TRANSLATIONS = {
         "command.fleche.desc": "Running attack",
         "command.rest": "Rest",
         "command.rest.desc": "Rest",
+        "command.halte": "Halt",
+        "command.halte.desc": "Stop",
 
         // Command options in settings (legacy)
         "command.option.marche": "Advance (forward)",
@@ -312,6 +316,8 @@ const TRANSLATIONS = {
         "command.fleche.desc": "Attaque en courant",
         "command.rest": "Repos",
         "command.rest.desc": "Repos",
+        "command.halte": "Halte",
+        "command.halte.desc": "Arrêt",
 
         // Command options in settings (legacy)
         "command.option.marche": "Marchez (avancer)",
