@@ -93,6 +93,12 @@ COMMANDS: dict[str, Command] = {
         is_weapon_specific=True,
         weapons=["sabre"],
     ),
+    "halte": Command(
+        id="halte",
+        french="Halte",
+        japanese="止め",
+        audio_file="halte.mp3",
+    ),
 }
 
 # Command sets for different skill levels
@@ -125,6 +131,7 @@ POSITION_EFFECTS: dict[str, float] = {
     "bond_avant": 1.5,
     "bond_arriere": -1.5,
     "fleche": 3.0,
+    "halte": 0.0,  # Stop command - no position change
 }
 
 

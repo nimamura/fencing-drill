@@ -763,6 +763,14 @@ async def session_stream(session_id: str):
                         }
                         await asyncio.sleep(1)
 
+        # Send halte command before end event
+        halte = COMMANDS["halte"]
+        yield {
+            "event": "command",
+            "data": json.dumps(halte.to_dict()),
+        }
+        await asyncio.sleep(1)  # Brief pause after halte
+
         # Send end event
         yield {"event": "end", "data": json.dumps({"message": "終了"})}
         session.stop()
