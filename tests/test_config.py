@@ -1,5 +1,26 @@
 """Tests for environment variable configuration."""
+import importlib
+import os
+
 import pytest
+
+
+@pytest.fixture(autouse=True)
+def reset_config():
+    """Reset config module after each test to ensure test isolation."""
+    yield
+    # Clear any env vars that were set
+    for key in ["SESSION_LIMIT", "SESSION_TIMEOUT_MINUTES", "LOG_LEVEL", "BASE_URL"]:
+        os.environ.pop(key, None)
+    # Reload config, session, and main modules to reset to defaults
+    # Order matters: config first, then modules that import it
+    import config
+    from logic import session
+    import main
+
+    importlib.reload(config)
+    importlib.reload(session)
+    importlib.reload(main)
 
 
 class TestConfigDefaults:

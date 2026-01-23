@@ -3,6 +3,22 @@ import pytest
 from httpx import AsyncClient, ASGITransport
 
 
+@pytest.fixture(autouse=True)
+def clean_session_manager():
+    """Ensure session manager is clean before and after each test."""
+    from main import session_manager
+
+    # Store and clear sessions before test
+    original = session_manager.sessions.copy()
+    session_manager.sessions.clear()
+
+    yield
+
+    # Restore after test
+    session_manager.sessions.clear()
+    session_manager.sessions.update(original)
+
+
 class TestInputValidation:
     """Test input validation for session start endpoint."""
 

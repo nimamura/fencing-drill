@@ -9,7 +9,7 @@ class TestSessionLimitE2E:
     def test_session_limit_returns_429(self):
         """API should return 429 when session limit is exceeded."""
         from main import app, session_manager
-        from logic.session import BasicConfig, SessionManager, TrainingMode
+        from logic.session import BasicConfig, TrainingMode
 
         client = TestClient(app)
 
@@ -19,7 +19,7 @@ class TestSessionLimitE2E:
 
         try:
             # Fill up to limit
-            for _ in range(SessionManager.MAX_SESSIONS):
+            for _ in range(session_manager.MAX_SESSIONS):
                 session_manager.create_session(
                     mode=TrainingMode.BASIC, config=BasicConfig()
                 )
@@ -44,7 +44,7 @@ class TestSessionLimitE2E:
     def test_session_limit_error_message_is_user_friendly(self):
         """429 response should have user-friendly error message."""
         from main import app, session_manager
-        from logic.session import BasicConfig, SessionManager, TrainingMode
+        from logic.session import BasicConfig, TrainingMode
 
         client = TestClient(app)
 
@@ -53,7 +53,7 @@ class TestSessionLimitE2E:
 
         try:
             # Fill up to limit
-            for _ in range(SessionManager.MAX_SESSIONS):
+            for _ in range(session_manager.MAX_SESSIONS):
                 session_manager.create_session(
                     mode=TrainingMode.BASIC, config=BasicConfig()
                 )

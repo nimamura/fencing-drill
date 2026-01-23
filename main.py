@@ -29,6 +29,9 @@ from logic.session import (
 )
 
 
+# SSE keepalive constant
+HEARTBEAT_INTERVAL_SECONDS = 30
+
 # Validation constants
 MIN_TEMPO_BPM = 30
 MAX_TEMPO_BPM = 120
@@ -551,7 +554,13 @@ async def session_stream(session_id: str):
         raise HTTPException(status_code=409, detail="Session is paused")
 
     async def event_generator():
-        """Generate SSE events for the session."""
+        """Generate SSE events for the session.
+
+        Note: SSE keepalive heartbeats (HEARTBEAT_INTERVAL_SECONDS) can be
+        implemented by the client reconnecting or by adding periodic comment
+        yields in long-running operations. The sse-starlette library handles
+        connection management.
+        """
         import json
         import random
 
