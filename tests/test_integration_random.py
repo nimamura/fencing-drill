@@ -183,3 +183,26 @@ class TestPhraseBasedRandomWeapon:
         )
 
         assert "fleche" not in commands, "Foil should not use fleche"
+
+
+class TestRemiseConstraints:
+    """Test remise-specific constraints in random generation."""
+
+    def test_no_consecutive_remise(self):
+        """Remise should never appear consecutively."""
+        from logic.generator import generate_random_commands
+
+        random.seed(42)
+
+        # Generate many commands to ensure statistical coverage
+        commands = generate_random_commands(
+            command_set="intermediate",
+            count=500,
+        )
+
+        # Check for consecutive remise
+        for i in range(len(commands) - 1):
+            if commands[i] == "remise":
+                assert commands[i + 1] != "remise", (
+                    f"Found consecutive remise at index {i} and {i + 1}"
+                )
