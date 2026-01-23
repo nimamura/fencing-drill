@@ -1,4 +1,5 @@
 """Integration tests for phrase-based random command generation."""
+import json
 import pytest
 import random
 
@@ -226,4 +227,66 @@ class TestRemiseConstraints:
         assert remise_ratio <= 0.25, (
             f"Remise frequency {remise_ratio:.1%} exceeds 25% limit "
             f"({remise_count} out of {len(commands)})"
+        )
+
+
+class TestSessionEndSignal:
+    """Test session end signal with halte command."""
+
+    def test_halte_command_exists(self):
+        """Halte command should be defined in COMMANDS."""
+        from logic.commands import COMMANDS
+
+        assert "halte" in COMMANDS, "halte command should exist"
+        halte = COMMANDS["halte"]
+        assert halte.french == "Halte"
+        assert halte.audio_file == "halte.mp3"
+
+    @pytest.mark.asyncio
+    async def test_session_ends_with_halte(self):
+        """Session should send halte command before end event."""
+        from fastapi.testclient import TestClient
+        from main import app
+
+        client = TestClient(app)
+
+        # Start a basic session with minimal repetitions
+        response = client.post(
+            "/session/start",
+            data={
+                "mode": "basic",
+                "pair_id": "marche_rompe",
+                "repetitions": 2,
+                "tempo_bpm": 120,  # Fast tempo for quick test
+                "weapon": "foil",
+            },
+        )
+        assert response.status_code == 200
+
+        # Extract session_id from response
+        import re
+        match = re.search(r'data-session-id="([^"]+)"', response.text)
+        assert match, "Session ID not found in response"
+        session_id = match.group(1)
+
+        # Collect events from SSE stream
+        events = []
+        with client.stream("GET", f"/session/stream?session_id={session_id}") as sse:
+            for line in sse.iter_lines():
+                if line.startswith("event:"):
+                    event_type = line.split(":", 1)[1].strip()
+                elif line.startswith("data:"):
+                    data = line.split(":", 1)[1].strip()
+                    events.append({"event": event_type, "data": json.loads(data)})
+                    if event_type == "end":
+                        break
+
+        # Find the last command before end event
+        command_events = [e for e in events if e["event"] == "command"]
+        assert len(command_events) >= 2, "Should have at least 2 command events"
+
+        # The last command before 'end' should be 'halte'
+        last_command = command_events[-1]["data"]
+        assert last_command["id"] == "halte", (
+            f"Last command should be 'halte', got '{last_command['id']}'"
         )
