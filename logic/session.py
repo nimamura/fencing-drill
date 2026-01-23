@@ -5,6 +5,8 @@ from datetime import datetime
 from enum import Enum
 from typing import Union
 
+from config import settings
+
 
 class SessionLimitExceeded(Exception):
     """Raised when the maximum number of sessions is exceeded."""
@@ -112,8 +114,15 @@ class Session:
 class SessionManager:
     """Manages training sessions."""
 
-    MAX_SESSIONS = 100
-    SESSION_TIMEOUT_MINUTES = 30
+    @property
+    def MAX_SESSIONS(self) -> int:
+        """Maximum number of concurrent sessions."""
+        return settings.session_limit
+
+    @property
+    def SESSION_TIMEOUT_MINUTES(self) -> int:
+        """Session timeout in minutes."""
+        return settings.session_timeout_minutes
 
     def __init__(self) -> None:
         self.sessions: dict[str, Session] = {}

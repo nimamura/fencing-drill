@@ -75,19 +75,21 @@ class TestSessionLimitExceeded:
 class TestSessionManagerLimits:
     """Test SessionManager limit functionality."""
 
-    def test_max_sessions_constant(self):
-        """SessionManager should have MAX_SESSIONS constant."""
+    def test_max_sessions_property(self):
+        """SessionManager should have MAX_SESSIONS property."""
         from logic.session import SessionManager
 
-        assert hasattr(SessionManager, "MAX_SESSIONS")
-        assert SessionManager.MAX_SESSIONS == 100
+        manager = SessionManager()
+        assert hasattr(manager, "MAX_SESSIONS")
+        assert manager.MAX_SESSIONS == 100
 
-    def test_session_timeout_constant(self):
-        """SessionManager should have SESSION_TIMEOUT_MINUTES constant."""
+    def test_session_timeout_property(self):
+        """SessionManager should have SESSION_TIMEOUT_MINUTES property."""
         from logic.session import SessionManager
 
-        assert hasattr(SessionManager, "SESSION_TIMEOUT_MINUTES")
-        assert SessionManager.SESSION_TIMEOUT_MINUTES == 30
+        manager = SessionManager()
+        assert hasattr(manager, "SESSION_TIMEOUT_MINUTES")
+        assert manager.SESSION_TIMEOUT_MINUTES == 30
 
     def test_max_sessions_limit_raises_exception(self):
         """create_session should raise SessionLimitExceeded when limit reached."""
@@ -100,7 +102,7 @@ class TestSessionManagerLimits:
 
         manager = SessionManager()
         # Fill up to limit
-        for _ in range(SessionManager.MAX_SESSIONS):
+        for _ in range(manager.MAX_SESSIONS):
             manager.create_session(mode=TrainingMode.BASIC, config=BasicConfig())
 
         # Next one should raise
@@ -141,7 +143,7 @@ class TestSessionManagerLimits:
         manager = SessionManager()
 
         # Fill up to limit
-        for _ in range(SessionManager.MAX_SESSIONS):
+        for _ in range(manager.MAX_SESSIONS):
             manager.create_session(mode=TrainingMode.BASIC, config=BasicConfig())
 
         # Make all sessions expired
