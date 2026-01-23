@@ -326,3 +326,40 @@ class TestCommandTranslations:
         assert "アルト" in content, "Halte Japanese name should be 'アルト'"
         assert '"command.halte.desc": "止め"' in content or "'command.halte.desc': '止め'" in content, \
             "Halte Japanese description should be '止め'"
+
+
+class TestDynamicHtmlI18n:
+    """Tests for data-i18n attributes in dynamically generated HTML."""
+
+    def test_session_start_stop_button_has_data_i18n(self):
+        """POST /session/start response should have data-i18n='button.stop' on stop button."""
+        # Start a session with minimal form data
+        response = client.post(
+            "/session/start",
+            data={
+                "mode": "basic",
+                "command": "marche",
+                "repetitions": "5",
+                "interval": "2",
+            },
+        )
+        assert response.status_code == 200
+        content = response.text
+        assert 'data-i18n="button.stop"' in content, \
+            "Stop button in session start response should have data-i18n attribute"
+
+    def test_session_stop_start_button_has_data_i18n(self):
+        """POST /session/stop response should have data-i18n='button.start' on start button."""
+        response = client.post("/session/stop")
+        assert response.status_code == 200
+        content = response.text
+        assert 'data-i18n="button.start"' in content, \
+            "Start button in session stop response should have data-i18n attribute"
+
+    def test_session_stop_idle_message_has_data_i18n(self):
+        """POST /session/stop response should have data-i18n='status.idle' on idle message."""
+        response = client.post("/session/stop")
+        assert response.status_code == 200
+        content = response.text
+        assert 'data-i18n="status.idle"' in content, \
+            "Idle status message in session stop response should have data-i18n attribute"
