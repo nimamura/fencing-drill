@@ -301,3 +301,28 @@ class TestCommandTranslations:
         # Check for description in Japanese section (休憩 appears as command.rest.desc value)
         assert '"command.rest.desc": "休憩"' in content or "'command.rest.desc': '休憩'" in content, \
             "Rest Japanese description should be '休憩'"
+
+    def test_halte_translation_exists(self):
+        """command.halte should be defined in all languages for session end signal."""
+        i18n_path = os.path.join(
+            os.path.dirname(os.path.dirname(__file__)),
+            "static", "js", "i18n.js"
+        )
+        with open(i18n_path, "r", encoding="utf-8") as f:
+            content = f.read()
+
+        assert '"command.halte"' in content, "command.halte should be defined"
+        assert '"command.halte.desc"' in content, "command.halte.desc should be defined"
+
+    def test_halte_japanese_translation_is_correct(self):
+        """Halte Japanese translation should be 'アルト' with description '止め'."""
+        i18n_path = os.path.join(
+            os.path.dirname(os.path.dirname(__file__)),
+            "static", "js", "i18n.js"
+        )
+        with open(i18n_path, "r", encoding="utf-8") as f:
+            content = f.read()
+
+        assert "アルト" in content, "Halte Japanese name should be 'アルト'"
+        assert '"command.halte.desc": "止め"' in content or "'command.halte.desc': '止め'" in content, \
+            "Halte Japanese description should be '止め'"
