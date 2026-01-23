@@ -594,6 +594,10 @@ async def session_stream(session_id: str):
                     if last_cmd and last_cmd == "fendez":
                         phrase_cmd_id = "remise"
 
+                    # Skip consecutive remise (never allow remise after remise)
+                    if phrase_cmd_id == "remise" and last_cmd == "remise":
+                        continue
+
                     # Skip commands not in difficulty's command set
                     if phrase_cmd_id not in command_ids:
                         continue
@@ -675,6 +679,10 @@ async def session_stream(session_id: str):
                         # Apply fendez->remise rule
                         if last_cmd and last_cmd == "fendez":
                             phrase_cmd_id = "remise"
+
+                        # Skip consecutive remise (never allow remise after remise)
+                        if phrase_cmd_id == "remise" and last_cmd == "remise":
+                            continue
 
                         # Skip if not in intermediate command set
                         if phrase_cmd_id not in command_ids:

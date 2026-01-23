@@ -457,6 +457,10 @@ def generate_random_commands(
             if last_cmd and should_force_remise(last_cmd):
                 cmd = "remise"
 
+            # Skip consecutive remise (never allow remise after remise)
+            if cmd == "remise" and last_cmd == "remise":
+                continue
+
             # Apply command transition rules (except when fendez->remise forced)
             elif last_cmd and last_cmd != "fendez":
                 preferred = get_preferred_next_command(last_cmd, actual_command_set)
