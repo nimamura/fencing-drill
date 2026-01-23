@@ -1,5 +1,5 @@
 // Service Worker for Fencing Drill PWA
-const CACHE_NAME = 'fencing-drill-v1';
+const CACHE_NAME = 'fencing-drill-v2';
 const AUDIO_CACHE_NAME = 'fencing-drill-audio-v1';
 
 // Static assets to cache on install
